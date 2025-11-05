@@ -508,13 +508,6 @@ function onLoad(ls)
     )
   end)
   self.addContextMenuItem("Update stats", updateStats)
-
-  for i, w in ipairs(state.info.weapons) do
-    local weaponName = string.sub(w.name,1,21):gsub("%(R%)", "[1E87FF]R[-]"):gsub("%(M%)", "[F4641D]M[-]")
-  	if string.len(w.name) > 21 then
-  		weaponName = weaponName.."..."
-  	end
-
   self.addContextMenuItem("Change UI position", function(pc) if state.isHorizontal ~= true then state.isHorizontal = true else state.isHorizontal = false end refreshUI() end)
 
 
