@@ -496,9 +496,6 @@ function onLoad(ls)
     state.attachments = {}
   end
 
-  self.addContextMenuItem("Engage", function(pc)  setEngage() end)
-  self.addContextMenuItem("Conceal", function(pc)  setConceal() end)
-  self.addContextMenuItem("Kill", kill)
   self.addContextMenuItem("Save place", function(pc) savePosition() end)
   self.addContextMenuItem("Load place", function(pc) loadPosition(pc) end)
   local operative = self
@@ -517,9 +514,6 @@ function onLoad(ls)
   	if string.len(w.name) > 21 then
   		weaponName = weaponName.."..."
   	end
-
-    self.addContextMenuItem(weaponName, function(pc) callback_Attack(i) end)
-  end
 
   self.addContextMenuItem("Change UI position", function(pc) if state.isHorizontal ~= true then state.isHorizontal = true else state.isHorizontal = false end refreshUI() end)
 
@@ -914,7 +908,6 @@ string.startswith = function(self, str)
 end
 string.endswith = function(self, str)
     return self:find(str .. "$") ~= nil
-
 end
 
 self.addContextMenuItem("Movement", function(pc)  agregaRuta() end)
