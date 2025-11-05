@@ -1,3 +1,161 @@
+
+  self.addContextMenuItem("Save place", function(pc) savePosition() end)
+  self.addContextMenuItem("Load place", function(pc) loadPosition(pc) end)
+
+self.addContextMenuItem("Movement", function(pc)  agregaRuta() end)
+self.addContextMenuItem("Targeting lines", function(pc)  agregaCono() end)
+
+--parte2
+function agregaRuta()
+--Actualizado KTMT
+CUBO = nill
+DataObjeto = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {85, 2, 100}
+}
+DataModel =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/main/"..state.base.x.."MM.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/main/collider4.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CUBO == nill then
+
+        CUBO = spawnObject(DataObjeto)
+	--print(CUBO.getGUID())
+        CUBO.setCustomObject(DataModel)
+	CUBO.angular_drag = 0.1
+	CUBO.bounciness = 0
+	CUBO.dynamic_friction = 0.7
+	CUBO.drag = 0.1
+	CUBO.mass = 1
+	CUBO.static_friction = 1
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/main/Node", function(req)
+local script = req.text
+CUBO.setLuaScript(script)
+CUBO.setVar("GUIDModel",self.getGUID())
+CUBO.setVar("GUIDNodPrev",self.getGUID())
+end
+
+)
+self.setLock(true)
+self.interactable = false 
+end
+
+function agregaCono()
+CONO = nill
+DataObjetoCono = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {0, 2, 0}
+}
+DataModelCono =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE_COLLIDER.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CONO == nill then
+
+        CONO = spawnObject(DataObjetoCono)
+	--print(CUBO.getGUID())
+        CONO.setCustomObject(DataModelCono)
+	CONO.angular_drag = 120
+	CONO.bounciness = 0
+	CONO.dynamic_friction = 1
+	CONO.drag = 120
+	CONO.mass = 10
+	CONO.static_friction = 1
+	CONO.use_gravity = false
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptCono", function(req)
+local script = req.text
+CONO.setLuaScript(script)
+--CONO.setColorTint(Color.fromString(pc))
+--print(self.getGUID())
+CONO.setVar("GUIDModel",self.getGUID())
+end
+
+)
+--self.setLock(true)
+--self.interactable = false
+
+
+end
+function agregaConoR()
+
+CONO = nill
+DataObjetoCono = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {self.getPosition().x+1, self.getPosition().y, self.getPosition().z}
+}
+DataModelCono =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CONO == nill then
+
+        CONO = spawnObject(DataObjetoCono)
+	--print(CUBO.getGUID())
+        CONO.setCustomObject(DataModelCono)
+	CONO.angular_drag = 120
+	CONO.bounciness = 0
+	CONO.dynamic_friction = 1
+	CONO.drag = 120
+	CONO.mass = 10
+	CONO.static_friction = 1
+	CONO.use_gravity = true
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptConoR", function(req)
+local script = req.text
+CONO.setLuaScript(script)
+--CONO.setColorTint(Color.fromString(pc))
+--print(self.getGUID())
+CONO.setVar("GUIDModel",self.getGUID())
+end
+
+)
+--self.setLock(true)
+--self.interactable = false
+
+
+end
+
+-----------------------------------------------
+-----------------------------------------------
+
 state = {}
 
 self.max_typed_number=99
@@ -380,10 +538,10 @@ end
 
 function createUI()
   local baseBundle = {
-    {name="Engage_ready", url=[=[https://steamusercontent-a.akamaihd.net/ugc/17374128901718966990/7760F8C1AD9FDA04E8CB6F13DBE4AA821A797549/]=]},
-    {name="Engage_activated", url=[=[http://cloud-3.steamusercontent.com/ugc/1857172427760474790/63E7C5132CFE12964FFAA74EE03535EA6FEE2637/]=]},
-    {name="Conceal_ready", url=[=[http://cloud-3.steamusercontent.com/ugc/1857172427760474921/2051CBD8272374F262C88AC0DABF50BEAAB2C3BA/]=]},
-    {name="Conceal_activated", url=[=[http://cloud-3.steamusercontent.com/ugc/1857172427760474857/9CE3B9494B93973E94B71E062558E88D83BEC6BC/]=]},
+    {name="Engage_ready", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Engage%20Ready.png]=]},
+    {name="Engage_activated", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Engage%20Expended.png]=]},
+    {name="Conceal_ready", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Conceal%20Ready.png]=]},
+    {name="Conceal_activated", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Conceal%20Expended.png]=]},
     {name="Wound_blue",   url=[=[http://cloud-3.steamusercontent.com/ugc/1857171492582455772/CFB7B4D001501AC54B4D0CC7FEE35AF679B73D34/]=]},
 	  {name="Wound_red",   url=[=[http://cloud-3.steamusercontent.com/ugc/1857171826950614938/C515FF37C3D1D269533C1B5FDA675895F792BC15/]=]},
   }
@@ -496,30 +654,8 @@ function onLoad(ls)
     state.attachments = {}
   end
 
-  self.addContextMenuItem("Engage", function(pc)  setEngage() end)
-  self.addContextMenuItem("Conceal", function(pc)  setConceal() end)
-  self.addContextMenuItem("Kill", kill)
-  self.addContextMenuItem("Save place", function(pc) savePosition() end)
-  self.addContextMenuItem("Load place", function(pc) loadPosition(pc) end)
   local operative = self
-  self.addContextMenuItem("Show range", function(pc)
-    Player[pc].showInputDialog(
-      "Enter desired range: (0 to disable)",
-      function (text, player_color)
-        onNumberTyped(player_color, tonumber(text))
-      end
-    )
-  end)
   self.addContextMenuItem("Update stats", updateStats)
-
-  for i, w in ipairs(state.info.weapons) do
-    local weaponName = string.sub(w.name,1,21):gsub("%(R%)", "[1E87FF]R[-]"):gsub("%(M%)", "[F4641D]M[-]")
-  	if string.len(w.name) > 21 then
-  		weaponName = weaponName.."..."
-  	end
-
-    self.addContextMenuItem(weaponName, function(pc) callback_Attack(i) end)
-  end
 
   self.addContextMenuItem("Change UI position", function(pc) if state.isHorizontal ~= true then state.isHorizontal = true else state.isHorizontal = false end refreshUI() end)
 
@@ -914,156 +1050,4 @@ string.startswith = function(self, str)
 end
 string.endswith = function(self, str)
     return self:find(str .. "$") ~= nil
-end
-
-self.addContextMenuItem("Movement", function(pc)  agregaRuta() end)
-self.addContextMenuItem("LOS (Offensive)", function(pc)  agregaCono() end)
-self.addContextMenuItem("LOS (Defensive)", function(pc)  agregaConoR() end)
---parte2
-function agregaRuta()
---Actualizado KTMT
-CUBO = nill
-DataObjeto = 
-{
-    type = "Custom_Model",
-    scale = {1,1,1},
-    rotation = {0, 0, 0},
-    position = {85, 2, 100}
-}
-DataModel =
-{
-    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/main/"..state.base.x.."MM.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
-    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/main/collider4.obj",
-    type = 0,
-    material = 0,
-    specular_intensity = 0,
-	specular_sharpness = 7,
-	freshnel_strength = 0.4
-   
-}
-if CUBO == nill then
-
-        CUBO = spawnObject(DataObjeto)
-	--print(CUBO.getGUID())
-        CUBO.setCustomObject(DataModel)
-	CUBO.angular_drag = 0.1
-	CUBO.bounciness = 0
-	CUBO.dynamic_friction = 0.7
-	CUBO.drag = 0.1
-	CUBO.mass = 1
-	CUBO.static_friction = 1
-
-end
- WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/main/Node", function(req)
-local script = req.text
-CUBO.setLuaScript(script)
-CUBO.setVar("GUIDModel",self.getGUID())
-CUBO.setVar("GUIDNodPrev",self.getGUID())
-end
-
-)
-self.setLock(true)
-self.interactable = false 
-end
-
-function agregaCono()
-
-CONO = nill
-DataObjetoCono = 
-{
-    type = "Custom_Model",
-    scale = {1,1,1},
-    rotation = {0, 0, 0},
-    position = {0, 2, 0}
-}
-DataModelCono =
-{
-    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
-    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE_COLLIDER.obj",
-    type = 0,
-    material = 0,
-    specular_intensity = 0,
-	specular_sharpness = 7,
-	freshnel_strength = 0.4
-   
-}
-if CONO == nill then
-
-        CONO = spawnObject(DataObjetoCono)
-	--print(CUBO.getGUID())
-        CONO.setCustomObject(DataModelCono)
-	CONO.angular_drag = 120
-	CONO.bounciness = 0
-	CONO.dynamic_friction = 1
-	CONO.drag = 120
-	CONO.mass = 10
-	CONO.static_friction = 1
-	CONO.use_gravity = false
-
-end
- WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptCono", function(req)
-local script = req.text
-CONO.setLuaScript(script)
---CONO.setColorTint(Color.fromString(pc))
---print(self.getGUID())
-CONO.setVar("GUIDModel",self.getGUID())
-end
-
-)
---self.setLock(true)
---self.interactable = false
-
-
-end
-function agregaConoR()
-
-CONO = nill
-DataObjetoCono = 
-{
-    type = "Custom_Model",
-    scale = {1,1,1},
-    rotation = {0, 0, 0},
-    position = {self.getPosition().x+1, self.getPosition().y, self.getPosition().z}
-}
-DataModelCono =
-{
-    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
-    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
-    type = 0,
-    material = 0,
-    specular_intensity = 0,
-	specular_sharpness = 7,
-	freshnel_strength = 0.4
-   
-}
-if CONO == nill then
-
-        CONO = spawnObject(DataObjetoCono)
-	--print(CUBO.getGUID())
-        CONO.setCustomObject(DataModelCono)
-	CONO.angular_drag = 120
-	CONO.bounciness = 0
-	CONO.dynamic_friction = 1
-	CONO.drag = 120
-	CONO.mass = 10
-	CONO.static_friction = 1
-	CONO.use_gravity = true
-
-end
- WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptConoR", function(req)
-local script = req.text
-CONO.setLuaScript(script)
---CONO.setColorTint(Color.fromString(pc))
---print(self.getGUID())
-CONO.setVar("GUIDModel",self.getGUID())
-end
-
-)
---self.setLock(true)
---self.interactable = false
-
-
 end
