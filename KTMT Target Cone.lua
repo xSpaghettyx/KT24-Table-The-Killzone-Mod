@@ -303,9 +303,10 @@ end
 
 function onLoad(ls)
 self.setName(
-"Hover over the cone and press R to select the target\n" ..
-"Press 1-4 to change the line color\n" ..
-"0 to finish"
+"Hover over and press these buttons:\n" ..
+"- R to select a target\n" ..
+"- 1-4 to change the line color\n" ..
+"- 0 to finish"
 )
 self.max_typed_number=9
 rngMov=3
