@@ -914,4 +914,157 @@ string.startswith = function(self, str)
 end
 string.endswith = function(self, str)
     return self:find(str .. "$") ~= nil
+
+end
+
+self.addContextMenuItem("Movement", function(pc)  agregaRuta() end)
+self.addContextMenuItem("LOS (Offensive)", function(pc)  agregaCono() end)
+self.addContextMenuItem("LOS (Defensive)", function(pc)  agregaConoR() end)
+--parte2
+function agregaRuta()
+--Actualizado KTMT
+CUBO = nill
+DataObjeto = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {85, 2, 100}
+}
+DataModel =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/main/"..state.base.x.."MM.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/main/collider4.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CUBO == nill then
+
+        CUBO = spawnObject(DataObjeto)
+	--print(CUBO.getGUID())
+        CUBO.setCustomObject(DataModel)
+	CUBO.angular_drag = 0.1
+	CUBO.bounciness = 0
+	CUBO.dynamic_friction = 0.7
+	CUBO.drag = 0.1
+	CUBO.mass = 1
+	CUBO.static_friction = 1
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/main/Node", function(req)
+local script = req.text
+CUBO.setLuaScript(script)
+CUBO.setVar("GUIDModel",self.getGUID())
+CUBO.setVar("GUIDNodPrev",self.getGUID())
+end
+
+)
+self.setLock(true)
+self.interactable = false 
+end
+
+function agregaCono()
+
+CONO = nill
+DataObjetoCono = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {0, 2, 0}
+}
+DataModelCono =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE_COLLIDER.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CONO == nill then
+
+        CONO = spawnObject(DataObjetoCono)
+	--print(CUBO.getGUID())
+        CONO.setCustomObject(DataModelCono)
+	CONO.angular_drag = 120
+	CONO.bounciness = 0
+	CONO.dynamic_friction = 1
+	CONO.drag = 120
+	CONO.mass = 10
+	CONO.static_friction = 1
+	CONO.use_gravity = false
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptCono", function(req)
+local script = req.text
+CONO.setLuaScript(script)
+--CONO.setColorTint(Color.fromString(pc))
+--print(self.getGUID())
+CONO.setVar("GUIDModel",self.getGUID())
+end
+
+)
+--self.setLock(true)
+--self.interactable = false
+
+
+end
+function agregaConoR()
+
+CONO = nill
+DataObjetoCono = 
+{
+    type = "Custom_Model",
+    scale = {1,1,1},
+    rotation = {0, 0, 0},
+    position = {self.getPosition().x+1, self.getPosition().y, self.getPosition().z}
+}
+DataModelCono =
+{
+    mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
+    type = 0,
+    material = 0,
+    specular_intensity = 0,
+	specular_sharpness = 7,
+	freshnel_strength = 0.4
+   
+}
+if CONO == nill then
+
+        CONO = spawnObject(DataObjetoCono)
+	--print(CUBO.getGUID())
+        CONO.setCustomObject(DataModelCono)
+	CONO.angular_drag = 120
+	CONO.bounciness = 0
+	CONO.dynamic_friction = 1
+	CONO.drag = 120
+	CONO.mass = 10
+	CONO.static_friction = 1
+	CONO.use_gravity = true
+
+end
+ WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/ScriptConoR", function(req)
+local script = req.text
+CONO.setLuaScript(script)
+--CONO.setColorTint(Color.fromString(pc))
+--print(self.getGUID())
+CONO.setVar("GUIDModel",self.getGUID())
+end
+
+)
+--self.setLock(true)
+--self.interactable = false
+
+
 end
