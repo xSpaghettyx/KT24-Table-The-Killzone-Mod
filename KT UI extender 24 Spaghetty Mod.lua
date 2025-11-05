@@ -19,7 +19,7 @@ DataObjeto =
 DataModel =
 {
     mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/main/"..state.base.x.."MM.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    diffuse = "https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/KTMT%20Diffuse.png",
     collider = "https://raw.githubusercontent.com/Ixidior/KTMT/main/collider4.obj",
     type = 0,
     material = 0,
@@ -41,7 +41,7 @@ if CUBO == nill then
 	CUBO.static_friction = 1
 
 end
- WebRequest.get("https://raw.githubusercontent.com/Ixidior/KTMT/main/Node", function(req)
+ WebRequest.get("https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/KTMT%20Movement.lua", function(req)
 local script = req.text
 CUBO.setLuaScript(script)
 CUBO.setVar("GUIDModel",self.getGUID())
@@ -65,7 +65,7 @@ DataObjetoCono =
 DataModelCono =
 {
     mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    diffuse = "https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/KTMT%20Diffuse.png",
     collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE_COLLIDER.obj",
     type = 0,
     material = 0,
@@ -115,7 +115,7 @@ DataObjetoCono =
 DataModelCono =
 {
     mesh = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
-    diffuse = "https://i.imgur.com/K1RvGML.jpg",
+    diffuse = "https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/KTMT%20Diffuse.png",
     collider = "https://raw.githubusercontent.com/Ixidior/KTMT/refs/heads/main/CONE.obj",
     type = 0,
     material = 0,
@@ -798,18 +798,8 @@ function refreshVectors(norotate)
         thickness = modelMeasureLineRadius*2*scaleFactor,
         rotation = (norotate and {0, 0, 0} or {-rotation.x, 0, -rotation.z})
       })
-    else
-      for _,r in pairs(ranges) do
-        local range = r.range
-        table.insert(newLines,{
-          points=getCircleVectorPoints(range - modelMeasureLineRadius + 0.05, 0.125),
-          color = r.color,
-          thickness = modelMeasureLineRadius*2*scaleFactor,
-          rotation = (norotate and {0, 0, 0} or {-rotation.x, 0, -rotation.z})
-        })
       end
     end
-  end
 
   self.setVectorLines(newLines)
 end
