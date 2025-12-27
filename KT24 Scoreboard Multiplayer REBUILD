@@ -2504,31 +2504,48 @@ end
 
 function updateInitiativeUI()
   local round = 0
-  local ip, np = 0, 0
+  local ip = 0
   local maxRounds = rules.scoring.maxRounds
   for i=maxRounds,1,-1 do
     if scoring[1].initiative[i] then
       round = i
-      ip, np = 1, 2
+      ip = 1
       break
     end
     if scoring[2].initiative[i] then
       round = i
-      ip, np = 2, 1
+      ip = 2
+      break
+    end
+        if scoring[3].initiative[i] then
+      round = i
+      ip = 3
+      break
+    end
+    if scoring[4].initiative[i] then
+      round = i
+      ip = 4
       break
     end
   end
 
   if round > 0 then
-    showUI("kts__initiative_display_player"..ip)
-    hideUI("kts__initiative_display_player"..np)
+    for pl = 1, 4 do
+      if pl == ip then
+        showUI("kts__initiative_display_player"..pl)
+      else
+        hideUI("kts__initiative_display_player"..pl)
+      end
+    end
     setUIValue("kts__round_current", "Round "..round)
   else
-    hideUI("kts__initiative_display_player1")
-    hideUI("kts__initiative_display_player2")
+    for pl = 1, 4 do
+      hideUI("kts__initiative_display_player"..pl)
+    end
     setUIValue("kts__round_current", "Pre game")
   end
 end
+
 
 function toggleInitiative(pl, round)
   local si = scoring[pl].initiative
