@@ -83,7 +83,7 @@ scoreboardTag = "Kill Team Scoreboard"
 opMap = {
   ["Crit Op"]="critop",
   ["Tac Op"]="tacop",
-  ["Kill Op"]="killop",
+  ["Elim Op"]="elimop",
 }
 
 defaultSettings = [[{
@@ -118,7 +118,7 @@ defaultSettings = [[{
       ],
       "options": []
     },
-    "killop": {
+    "elimop": {
       "max":6,
       "maxEach":6,
       "VPs":[
@@ -126,7 +126,7 @@ defaultSettings = [[{
     },
     "primary":{
       "max":3,
-      "options": ["Crit Op", "Tac Op", "Kill Op"]
+      "options": ["Crit Op", "Tac Op", "Elim Op"]
     },
     "secondary":{
       "max":6,
@@ -190,8 +190,8 @@ function atrInitiative(player, round, k)
   return string.format("kts__initiative_player%d_%d_%s", player, round, k)
 end
 
-function atrKillOp(player, k)
-  return string.format("kts__killop_player%d_%s", player, k)
+function atrElimOp(player, k)
+  return string.format("kts__elimop_player%d_%s", player, k)
 end
 
 function atrPrimaryOp(player, k)
@@ -327,11 +327,11 @@ function calculateOpScore(op_type, pl)
   return math.min(total, rules.scoring[op_type].max)
 end
 
-function makeKillOpScoreTable()
-  local killopScore = {
+function makeElimOpScoreTable()
+  local elimopScore = {
     score = 0
   }
-  return killopScore
+  return elimopScore
 end
 
 function makePrimaryOpScoreTable()
@@ -351,17 +351,17 @@ function makeInitiativeScoreTable()
   return initiative
 end
 
-function calculateKillScore(pl)
+function calculateElimScore(pl)
   return math.min(
-    scoring[pl].killop.score,
-    rules.scoring.killop.max)
+    scoring[pl].elimop.score,
+    rules.scoring.elimop.max)
 end
 
 function calculatePrimaryScore(pl)
   local score = scoring[pl].primary.score
   if scoring[pl].primary.selection and scoring[pl].primary.revealed then
     local selected = opMap[scoring[pl].primary.selection]
-    if selected == 'killop' then
+    if selected == 'elimop' then
       score = scoring[pl][selected].score
     else
       score = calculateOpScore(selected, pl)
@@ -376,9 +376,9 @@ end
 function calculateScore(pl)
   local crit = calculateOpScore('critop', pl)
   local tac = calculateOpScore('tacop', pl)
-  local kill = calculateKillScore(pl)
+  local elim = calculateElimScore(pl)
   local primary = calculatePrimaryScore(pl)
-  return math.min(crit + tac + kill, rules.scoring.max), crit, tac, kill, primary
+  return math.min(crit + tac + elim, rules.scoring.max), crit, tac, elim, primary
 end
 
 function resetScoring()
@@ -388,7 +388,7 @@ function resetScoring()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -396,7 +396,7 @@ function resetScoring()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -404,7 +404,7 @@ function resetScoring()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -412,7 +412,7 @@ function resetScoring()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -1061,9 +1061,9 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
   return uy-y+h
 end
 
-function buildKillOpSelector(ch, uy, x, y, w, player)
+function buildElimOpSelector(ch, uy, x, y, w, player)
   local h = 90
-  local dd = atrKillOp(player, "dropdown")
+  local dd = atrElimOp(player, "dropdown")
   local cch = {
     {
       tag="Text",
@@ -1074,13 +1074,13 @@ function buildKillOpSelector(ch, uy, x, y, w, player)
         height=40,
         itemHeight=40
       },
-      value="Kill Op"
+      value="Elimination Op"
     },
     {
       tag="Text",
       attributes={
         class="title2",
-        id=atrKillOp(player, "display"),
+        id=atrElimOp(player, "display"),
         rectAlignment="UpperLeft",
         width=w,
         height=40,
@@ -1092,7 +1092,7 @@ function buildKillOpSelector(ch, uy, x, y, w, player)
       tag="Text",
       attributes={
         class="title2",
-        id=atrKillOp(player, "amount"),
+        id=atrElimOp(player, "amount"),
         rectAlignment="LowerCenter",
         width=w,
         height=40
@@ -1102,8 +1102,8 @@ function buildKillOpSelector(ch, uy, x, y, w, player)
     {
       tag="Button",
       attributes={
-        id=atrKillOp(player, "button_plus"),
-        onClick="onIncreaseKillOp",
+        id=atrElimOp(player, "button_plus"),
+        onClick="onIncreaseElimOp",
         width=80, height=32,
         fontSize=28,
         rectAlignment="LowerRight",
@@ -1114,8 +1114,8 @@ function buildKillOpSelector(ch, uy, x, y, w, player)
     {
       tag="Button",
       attributes={
-        id=atrKillOp(player, "button_minus"),
-        onClick="onDecreaseKillOp",
+        id=atrElimOp(player, "button_minus"),
+        onClick="onDecreaseElimOp",
         width=80, height=32,
         fontSize=28,
         rectAlignment="LowerLeft",
@@ -1180,10 +1180,10 @@ function buildPrimaryOpCel(ch, uy, x, y, w, player)
   return uy-y+h
 end
 
-function buildKillOpCel(ch, uy, x, y, w, player)
+function buildElimOpCel(ch, uy, x, y, w, player)
   local h = 4
   local cch = {}
-  h = buildKillOpSelector(cch, h, 4, 0, w-8, player) + 4
+  h = buildElimOpSelector(cch, h, 4, 0, w-8, player) + 4
 
   table.insert(ch, {
     tag="Panel",
@@ -1243,13 +1243,13 @@ function buildPrimaryRow(ch, uy, x, y, w)
   return uy-y+h
 end
 
-function buildKillOpRow(ch, uy, x, y, w)
+function buildElimOpRow(ch, uy, x, y, w)
   local cch = {}
   local celw = (w-12)/4
-  local h = buildKillOpCel(cch, 0, 0, 0, celw, 3)
-  buildKillOpCel(cch, 0, celw+4, 0, celw, 1)
-  buildKillOpCel(cch, 0, celw*2+8, 0, celw, 2)
-  buildKillOpCel(cch, 0, celw*3+12, 0, celw, 4)
+  local h = buildElimOpCel(cch, 0, 0, 0, celw, 3)
+  buildElimOpCel(cch, 0, celw+4, 0, celw, 1)
+  buildElimOpCel(cch, 0, celw*2+8, 0, celw, 2)
+  buildElimOpCel(cch, 0, celw*3+12, 0, celw, 4)
 
   table.insert(ch, {
     tag="Panel",
@@ -1394,7 +1394,7 @@ function buildBonusRow(ch, uy, x, y, w)
   return uy-y+h
 end
 
-function buildKillOpTotalRow(ch, uy, x, y, w)
+function buildElimOpTotalRow(ch, uy, x, y, w)
   local h = 60
   table.insert(ch, {
     tag="Panel",
@@ -1418,7 +1418,7 @@ function buildKillOpTotalRow(ch, uy, x, y, w)
             attributes={
               class="title2"
             },
-            value="Kill Op total"
+            value="Elim Op total"
           }
         }
       },
@@ -1427,40 +1427,40 @@ function buildKillOpTotalRow(ch, uy, x, y, w)
         attributes={
           class="title2",
           fontSize=h*0.75,
-          id="kts__killoptotal_player1",
+          id="kts__elimoptotal_player1",
           offsetXY = string.format("%f 0", -w/8)
         },
-        value=string.format("0/%d", rules.scoring.killop.max)
+        value=string.format("0/%d", rules.scoring.elimop.max)
       },
       {
         tag="Text",
         attributes={
           class="title2",
           fontSize=h*0.75,
-          id="kts__killoptotal_player2",
+          id="kts__elimoptotal_player2",
           offsetXY = string.format("%f 0", w/8)
         },
-        value=string.format("0/%d", rules.scoring.killop.max)
+        value=string.format("0/%d", rules.scoring.elimop.max)
       },
             {
         tag="Text",
         attributes={
           class="title2",
           fontSize=h*0.75,
-          id="kts__killoptotal_player3",
+          id="kts__elimoptotal_player3",
           offsetXY = string.format("%f 0", -w/8*3)
         },
-        value=string.format("0/%d", rules.scoring.killop.max)
+        value=string.format("0/%d", rules.scoring.elimop.max)
       },
       {
         tag="Text",
         attributes={
           class="title2",
           fontSize=h*0.75,
-          id="kts__killoptotal_player4",
+          id="kts__elimoptotal_player4",
           offsetXY = string.format("%f 0", w/8*3)
         },
-        value=string.format("0/%d", rules.scoring.killop.max)
+        value=string.format("0/%d", rules.scoring.elimop.max)
       }
     }
   })
@@ -1641,15 +1641,15 @@ function buildScoreboard(def)
     uiHeight = buildOpRow(ch, uiHeight, 5, 0, uiWidth, round, rules.scoring.tacop, 'tacop', 4) + 4
   end
 
-  uiHeight = buildRowTitle(ch, 'Kill Op', uiHeight, 5, 0, uiWidth, 60, round, 4) + 4
-  uiHeight = buildKillOpRow(ch, uiHeight, 5, 0, uiWidth) + 4
+  uiHeight = buildRowTitle(ch, 'Elim Op', uiHeight, 5, 0, uiWidth, 60, round, 4) + 4
+  uiHeight = buildElimOpRow(ch, uiHeight, 5, 0, uiWidth) + 4
   uiHeight = buildRowTitle(ch, 'Tac Op', uiHeight, 5, 0, uiWidth, 60, round, 4) + 4
   uiHeight = buildTacOpRow(ch, uiHeight, 5, 0, uiWidth) + 4
   uiHeight = buildRowTitle(ch, 'Primary Op', uiHeight, 5, 0, uiWidth, 60, round, 4) + 4
   uiHeight = buildPrimaryRow(ch, uiHeight, 5, 0, uiWidth) + 4
   uiHeight = buildCritOpTotalRow(ch, uiHeight, 5, -5, uiWidth, 60) + 9
   uiHeight = buildTacOpTotalRow(ch, uiHeight, 5, -5, uiWidth, 60) + 9
-  uiHeight = buildKillOpTotalRow(ch, uiHeight, 5, -5, uiWidth) + 9
+  uiHeight = buildElimOpTotalRow(ch, uiHeight, 5, -5, uiWidth) + 9
   uiHeight = buildGrandTotalRow(ch, uiHeight, 5, 0, uiWidth) + 5
 
   local uiHalf = uiHeight/2
@@ -1855,9 +1855,9 @@ function hudScoreElement(ch, x, y, s, layout, pl)
           width=s/3,
           fontSize=subH-8,
           rectAlignment="LowerRight",
-          id="kts__killoptotal_player"..pl
+          id="kts__elimoptotal_player"..pl
         },
-        value=string.format("0/%d", rules.scoring.killop.max)
+        value=string.format("0/%d", rules.scoring.elimop.max)
       }
     }
   })
@@ -2162,7 +2162,7 @@ function loadGM()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -2170,7 +2170,7 @@ function loadGM()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -2178,7 +2178,7 @@ function loadGM()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -2186,7 +2186,7 @@ function loadGM()
     {
       critop=makeOpScoreTable('critop'),
       tacop=makeOpScoreTable('tacop'),
-      killop=makeKillOpScoreTable(),
+      elimop=makeElimOpScoreTable(),
       primary=makePrimaryOpScoreTable(),
       initiative=makeInitiativeScoreTable(),
       command=3
@@ -2277,16 +2277,16 @@ function refreshPrimaryOpUI(pl)
   setUIValue(atrPrimaryOp(pl, "amount"), newstr)
 end
 
-function refreshKillOpUI(pl)
-  local killop = scoring[pl].killop
-  local max = rules.scoring.killop.maxEach
+function refreshElimOpUI(pl)
+  local elimop = scoring[pl].elimop
+  local max = rules.scoring.elimop.maxEach
   local newstr
   if max > 0 then
-    newstr = string.format("%d/%d", killop.score, max)
+    newstr = string.format("%d/%d", elimop.score, max)
   else
-    newstr = string.format("%d", killop.score)
+    newstr = string.format("%d", elimop.score)
   end
-  setUIValue(atrKillOp(pl, "amount"), newstr)
+  setUIValue(atrElimOp(pl, "amount"), newstr)
 end
 
 function refreshPrimaryOpScore(pl)
@@ -2301,12 +2301,12 @@ function setPrimaryOpScore(pl, val)
   updateScoreUI(pl)
 end
 
-function setKillOpScore(pl, val)
-  local killop = scoring[pl].killop
-  local max = rules.scoring.killop.max
+function setElimOpScore(pl, val)
+  local elimop = scoring[pl].elimop
+  local max = rules.scoring.elimop.max
   local newval = math.max(0, math.min(val, max))
-  killop.score = newval
-  refreshKillOpUI(pl)
+  elimop.score = newval
+  refreshElimOpUI(pl)
   refreshPrimaryOpScore(pl)
   updateScoreUI(pl)
 end
@@ -2373,20 +2373,20 @@ function onPrimaryOpReveal(player, val, id)
   end
 end
 
-function onIncreaseKillOp(player, val, id)
+function onIncreaseElimOp(player, val, id)
   local pl = string.gmatch(id, "(%d+)")()
   pl = tonumber(pl)
   if allowRecord(pl, true) then
-    setKillOpScore(pl, scoring[pl].killop.score + 1)
+    setElimOpScore(pl, scoring[pl].elimop.score + 1)
   else
     showMaxRecordMessage(player)
   end
 end
 
-function onDecreaseKillOp(player, val, id)
+function onDecreaseElimOp(player, val, id)
   local pl = string.gmatch(id, "(%d+)")()
   pl = tonumber(pl)
-  setKillOpScore(pl, scoring[pl].killop.score - 1)
+  setElimOpScore(pl, scoring[pl].elimop.score - 1)
 end
 
 function onIncreasePrimaryOp(player, val, id)
@@ -2414,16 +2414,16 @@ function onDecreaseBonus(player, val, id)
 end
 
 function refreshScoreUI(pl)
-  local score, crit, tac, kill, primary = calculateScore(pl)
+  local score, crit, tac, elim, primary = calculateScore(pl)
   local crit_string = string.format("%d/%d", crit, rules.scoring.critop.max)
   local tac_string = string.format("%d/%d", tac, rules.scoring.tacop.max)
-  local kill_string = string.format("%d/%d", kill, rules.scoring.killop.max)
+  local elim_string = string.format("%d/%d", elim, rules.scoring.elimop.max)
   local primary_string = string.format("%d/%d", primary, rules.scoring.primary.max)
-  local grand = string.format("%d", crit + tac + kill + primary)
+  local grand = string.format("%d", crit + tac + elim + primary)
 
   setUIValue("kts__critoptotal_player"..pl, crit_string)
   setUIValue("kts__tacoptotal_player"..pl, tac_string)
-  setUIValue("kts__killoptotal_player"..pl, kill_string)
+  setUIValue("kts__elimoptotal_player"..pl, elim_string)
   setUIValue("kts__primaryoptotal_player"..pl, primary_string)
 
   setUIValue("kts__grandtotal_player"..pl, grand)
@@ -2686,7 +2686,7 @@ function setPrimaryOp(pl, guid)
   scoring[pl] = scoring[pl] or {
     critop = makeOpScoreTable('critop'),
     tacop  = makeOpScoreTable('tacop'),
-    killop = makeKillOpScoreTable(),
+    elimop = makeElimOpScoreTable(),
     primary = makePrimaryOpScoreTable(),
     initiative = makeInitiativeScoreTable(),
     command = 3
