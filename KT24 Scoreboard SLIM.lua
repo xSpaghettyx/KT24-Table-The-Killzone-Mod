@@ -1940,7 +1940,7 @@ function buildUI()
   local defaults = makeDefaults(rules)
 
   Wait.frames(function() buildHUD(defaults) end, 20)
-
+  Wait.frames(refresh, 30)
   buildScoreboard(defaults)
 end
 
@@ -1988,6 +1988,7 @@ end
 function onLoad(state)
   self.setTags({scoreboardTag})
   self.addContextMenuItem("Reset Scoreboard", resetScoring, false)
+  self.addContextMenuItem("Refresh", refresh, false)
   if state then
     local state = JSON.decode(state)
     if state then
