@@ -120,8 +120,8 @@ defaultSettings = [[{
       "options": []
     },
     "killop": {
-      "max":2,
-      "maxEach":2,
+      "max":6,
+      "maxEach":6,
       "VPs":[
       ]
     },
@@ -583,7 +583,7 @@ function insertOpVps(ch, x, y, w, round, op, op_type, player, gap)
   local cols = math.min(vps, rules.art.gui.scoreboard.primaryColumns)
   local rows = math.ceil(vps/cols)
   local celw = math.floor(w/cols)
-  local celh = 130
+  local celh = 160
   local pch = {}
   local h = celh * rows
 
@@ -1073,8 +1073,7 @@ function buildKillOpSelector(ch, uy, x, y, w, player)
         rectAlignment="UpperLeft",
         width=w,
         height=40,
-        itemHeight=40,
-        fontSize=25
+        itemHeight=40
       },
       value="Elimination Op"
     },
@@ -1633,7 +1632,7 @@ function buildScoreboard(def)
   table.insert(ch, buildNameplate((uiWidth-12)/4+4, -uiHeight, (uiWidth-4)/4, 100, 1))
   table.insert(ch, buildNameplate((uiWidth-12)/2+8, -uiHeight, (uiWidth-4)/4, 100, 2))
   table.insert(ch, buildNameplate((uiWidth-12)/4*3+12, -uiHeight, (uiWidth-4)/4, 100, 4))
-  uiHeight = uiHeight + 100
+  uiHeight = uiHeight + 64
 
   local round = 1
   uiHeight = buildInitiativeRow(ch, uiHeight+20, 5, 0, uiWidth, 80, round, 4) + 4
@@ -1823,7 +1822,7 @@ function hudScoreElement(ch, x, y, s, layout, pl)
         attributes={
           class="title2",
           height=subH,
-          width=s/2,
+          width=s/3,
           fontSize=subH-8,
           rectAlignment="LowerLeft",
           id="kts__critoptotal_player"..pl
@@ -1835,7 +1834,7 @@ function hudScoreElement(ch, x, y, s, layout, pl)
         attributes={
           class="title2",
           height=subH,
-          width=s/2,
+          width=s/3,
           fontSize=subH-8,
           rectAlignment="LowerRight",
           id="kts__killoptotal_player"..pl
