@@ -269,7 +269,6 @@ function refresh()
       playerNames[p] = p
     end
     setUIValue(uiid, playerNames[p])
-    -- previously set streamer UI; removed
     local color = Color.fromString(p)
     local color1 = color:lerp(Color(1, 1, 1), 0.25)
     local color2 = color:lerp(Color(1, 1, 1), 0.6)
@@ -1926,6 +1925,26 @@ function loadGM()
   local settings = JSON.decode(defaultSettings)
 
   setup(settings)
+  
+  scoring = {
+    {
+      critop=makeOpScoreTable('critop'),
+      tacop=makeOpScoreTable('tacop'),
+      killop=makeKillOpScoreTable(),
+      primary=makePrimaryOpScoreTable(),
+      initiative=makeInitiativeScoreTable(),
+      command=3
+    },
+    {
+      critop=makeOpScoreTable('critop'),
+      tacop=makeOpScoreTable('tacop'),
+      killop=makeKillOpScoreTable(),
+      primary=makePrimaryOpScoreTable(),
+      initiative=makeInitiativeScoreTable(),
+      command=3
+    }
+  }
+
   buildUI()
   Wait.frames(refresh, 10)
   Timer.create({
