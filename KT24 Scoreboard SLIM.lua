@@ -925,7 +925,8 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
         id=atrPrimaryOp(player, "amount"),
         rectAlignment="LowerCenter",
         width=w,
-        height=40
+        height=40,
+        active="false"
       },
       value=string.format("0/%d", rules.scoring.primary.max)
     },
@@ -941,30 +942,6 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
         active=false,
         visibility=vp,
         text="Reveal Primary Op"
-      }
-    },
-    {
-      tag="Button",
-      attributes={
-        id=atrPrimaryOp(player, "button_plus"),
-        onClick="onIncreasePrimaryOp",
-        width=80, height=32,
-        fontSize=28,
-        rectAlignment="LowerRight",
-        offsetXY="-4 4",
-        text="+"
-      }
-    },
-    {
-      tag="Button",
-      attributes={
-        id=atrPrimaryOp(player, "button_minus"),
-        onClick="onDecreasePrimaryOp",
-        width=80, height=32,
-        fontSize=28,
-        rectAlignment="LowerLeft",
-        offsetXY="4 4",
-        text="-"
       }
     }
   }
@@ -2106,27 +2083,38 @@ function onTacOpReveal(player, val, id)
 end
 
 function onPrimaryOpReveal(player, val, id)
-  local pl = string.gmatch(id, "(%d+)")()
-  pl = tonumber(pl)
+  local pl = tonumber(string.match(id, "%d+"))
   local revealButton = atrPrimaryOp(pl, "button_reveal")
   local display = atrPrimaryOp(pl, "display")
   local obj = getObjectFromGUID(scoring[pl].primary.guid)
+
   if obj then
     obj.rotate(Vector(180, 180, 0))
   end
+
   local name = obj and obj.getGMNotes() or ""
   setUIValue(display, name)
   hideUI(revealButton)
   showUI(display)
-
   setUIValue(atrPrimaryOp(pl, "streamer"), name)
+
   scoring[pl].primary.revealed = true
-  
+
+  local score = calculatePrimaryScore(pl)
+
   if allowRecord(pl, true) then
-    setPrimaryOpScore(pl, calculatePrimaryScore(pl))
+    setPrimaryOpScore(pl, score)
   else
     showMaxRecordMessage(player)
   end
+
+  revealPrimaryAmount(pl, score)
+end
+
+function revealPrimaryAmount(pl, score)
+  local id = atrPrimaryOp(pl, "amount")
+  setUIValue(id, string.format("%d/%d", score, rules.scoring.primary.max))
+  showUI(id)
 end
 
 function onIncreaseKillOp(player, val, id)
@@ -2399,7 +2387,6 @@ function comSetSelectedPrimaryOp(params)
 end
 
 function setPrimaryOp(pl, guid)
-  -- fixed: use 'pl' (the parameter) instead of undefined 'player'
   local selector = atrPrimaryOp(pl, "dropdown")
   local obj = getObjectFromGUID(guid)
   local name = ""
@@ -2411,7 +2398,6 @@ function setPrimaryOp(pl, guid)
     hideUI(selector)
   end
 
-  -- ensure scoring structure exists
   scoring = scoring or {}
   scoring[pl] = scoring[pl] or {
     critop = makeOpScoreTable('critop'),
