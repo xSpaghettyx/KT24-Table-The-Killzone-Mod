@@ -334,21 +334,35 @@ self.setVectorLines(nil)
 self.setTags({"KTUI_ToolActive"})
 end
 
-
-
 function refrescaTextoRango()
-cat1 = objModel.getPosition().x-ObjMiniTarget.getPosition().x
---print(cat1)
-cat2 = objModel.getPosition().z-ObjMiniTarget.getPosition().z
---print(cat2)
-cat3 = objModel.getPosition().y-objModel.getBounds().offset.y-ObjMiniTarget.getPosition().y-ObjMiniTarget.getBounds().offset.y
---print(cat3)
-lhip = math.sqrt((cat1*cat1)+(cat2*cat2))-((objModel.getTable("state").base.x+ObjMiniTarget.getTable("state").base.x)*mtoi*0.5)
---print(lhip)
-hip = math.sqrt((lhip*lhip)+(cat3*cat3))
-hip=math.ceil(hip)
-self.editButton({index=0, label=hip.."''"})
+    local cat1, cat2, cat3, lhip, hip
+
+    if lockEnabled then
+        -- First option: compare objModel ↔ ObjMiniTarget, subtract both radii
+        cat1 = objModel.getPosition().x - ObjMiniTarget.getPosition().x
+        cat2 = objModel.getPosition().z - ObjMiniTarget.getPosition().z
+        cat3 = objModel.getPosition().y - objModel.getBounds().offset.y
+             - ObjMiniTarget.getPosition().y - ObjMiniTarget.getBounds().offset.y
+
+        lhip = math.sqrt((cat1*cat1)+(cat2*cat2))
+             - ((objModel.getTable("state").base.x + ObjMiniTarget.getTable("state").base.x) * mtoi * 0.5)
+    else
+        -- Second option: compare self ↔ ObjMiniTarget, subtract only target radius
+        cat1 = ObjMiniTarget.getPosition().x - self.getPosition().x
+        cat2 = ObjMiniTarget.getPosition().z - self.getPosition().z
+        cat3 = ObjMiniTarget.getPosition().y - ObjMiniTarget.getBounds().offset.y
+             - self.getPosition().y - self.getBounds().offset.y
+
+        lhip = math.sqrt((cat1*cat1)+(cat2*cat2))
+             - ((ObjMiniTarget.getTable("state").base.x) * 0.5 * mtoi)
+    end
+
+    hip = math.sqrt((lhip*lhip)+(cat3*cat3))
+    hip = math.ceil(hip)
+
+    self.editButton({index=0, label=hip.."''"})
 end
+
 
 function tryRandomize(pc)
   estado_cono = 1
