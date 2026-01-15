@@ -296,9 +296,9 @@ function onNumberTyped( pc, n )
     elseif n == 8 then
         lockEnabled = not lockEnabled
         if lockEnabled then
-            broadcastToColor("Tool locked to base", pc, {1,1,1})
+            broadcastToColor("Targeting Tool locked to base", pc, {1,1,1})
         else
-            broadcastToColor("Tool unlocked", pc, {1,0,0})
+            broadcastToColor("Targeting Tool unlocked", pc, {1,1,1})
         end
         return
 
@@ -351,7 +351,7 @@ end
 function tryRandomize(pc)
   estado_cono = 1
   --print("seleccione objetivo")
- msg = "Select Target for LOS"
+ msg = "Select Target"
 color = pc
 rgb = {r=1, g=1, b=1}
 broadcastToColor(msg, color, rgb)
