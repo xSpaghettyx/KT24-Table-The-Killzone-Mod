@@ -23,6 +23,8 @@ targetConoZ = nil
 ObjMiniTarget = nil
 objModel = nil
 
+lockEnabled = true
+
 
 function onPickUp(cp)
 clickPlayerColor = cp
@@ -60,44 +62,36 @@ end
 
 
 function posicionLock()
+    rngMov = baseModel*mtoi*0.5
+    mouseX = self.getPosition().x  
+    mouseZ = self.getPosition().z  
+    newX = mouseX
+    newZ = mouseZ
 
-		rngMov = baseModel*mtoi*0.5
-	        mouseX = self.getPosition().x  
-        	mouseZ = self.getPosition().z  
-		newX = mouseX
-		newZ = mouseZ
-		FZ=1
-		SX=0
-		SZ=0
-		--print("X:"..mouseX.."|Z:"..mouseZ)
-		if math.sqrt(((mouseX-posX)*(mouseX-posX)) + ((mouseZ-posZ)*(mouseZ-posZ))) != rngMov then
-			--print("dentro")
-				m=(mouseZ-posZ)/(mouseX-posX)
-				A=(m*mouseX)-mouseZ+posZ
-				T1=(1+(m*m))
-				T2=(-2*posX)+(-2*A*m)
-				T3=(posX*posX)+(A*A)-(rngMov*rngMov)
-				S1X = ((-1*T2)+math.sqrt((T2*T2)-(4*T1*T3)))/(2*T1)
-				S2X = ((-1*T2)-math.sqrt((T2*T2)-(4*T1*T3)))/(2*T1)
-				if mouseX > posX then SX = math.max(S1X,S2X) else SX = math.min(S1X,S2X) end
-				if mouseZ < posZ then FZ = -1 else FZ = 1 end
-				SZ = (math.sqrt((rngMov*rngMov)-((SX-posX)*(SX-posX)))*FZ)+posZ
-				--print("pX:"..posX.."|pZ:"..posZ.."|m:"..m.."|A:"..A.."|T1:"..T1.."|T2:"..T2.."|T3:"..T3.."|FZ:"..FZ)
-				newX = SX
-				newZ = SZ
-				--print("X:"..mouseX.."|newX:"..newX.."|Z:"..mouseZ.."|newZ:"..newZ)
-				self.setPosition({x=newX, y=posY, z=newZ})
-				self.setVelocity({0,0,0})
-        			self.setAngularVelocity({0,0,0})
-				--Wait.frames(function() print("corrigio") end, 5)
-		else
-			--print("fuera")
-		end
-		self.setRotation({0,0,0})
-		refrescaVectores()
-		
+    if lockEnabled then
+        if math.sqrt(((mouseX-posX)^2) + ((mouseZ-posZ)^2)) ~= rngMov then
+            m = (mouseZ-posZ)/(mouseX-posX)
+            A = (m*mouseX)-mouseZ+posZ
+            T1 = 1+(m*m)
+            T2 = (-2*posX)+(-2*A*m)
+            T3 = (posX*posX)+(A*A)-(rngMov*rngMov)
+            S1X = ((-T2)+math.sqrt((T2*T2)-(4*T1*T3)))/(2*T1)
+            S2X = ((-T2)-math.sqrt((T2*T2)-(4*T1*T3)))/(2*T1)
+            if mouseX > posX then SX = math.max(S1X,S2X) else SX = math.min(S1X,S2X) end
+            if mouseZ < posZ then FZ = -1 else FZ = 1 end
+            SZ = (math.sqrt((rngMov*rngMov)-((SX-posX)*(SX-posX)))*FZ)+posZ
+            newX = SX
+            newZ = SZ
+            self.setPosition({x=newX, y=posY, z=newZ})
+            self.setVelocity({0,0,0})
+            self.setAngularVelocity({0,0,0})
+        end
+    end
 
+    self.setRotation({0,0,0})
+    refrescaVectores()
 end
+
 
 function onDropped(cp)
 if pickedUp == true then
@@ -289,8 +283,15 @@ function onNumberTyped( pc, n )
 		posicionLock()
 	elseif n == 7 then
 		
-	elseif n == 8 then
-		
+    elseif n == 8 then
+        lockEnabled = not lockEnabled
+        if lockEnabled then
+            broadcastToColor("Position lock ENABLED", pc, {0,1,0})
+        else
+            broadcastToColor("Position lock DISABLED", pc, {1,0,0})
+        end
+        return
+
 	elseif n == 9 then
 		
 	else
