@@ -269,6 +269,7 @@ lambda = 1
 	--print("total"..posY-self.getPosition().y)
      end
 end
+
 function onNumberTyped( pc, n )
 
 	if n > 0 and n <= 1 then
@@ -294,15 +295,15 @@ function onNumberTyped( pc, n )
 	elseif n == 7 then
 		
     elseif n == 8 then
-        lockEnabled = not lockEnabled
+
+	elseif n == 9 then
+	        lockEnabled = not lockEnabled
         if lockEnabled then
             broadcastToColor("Targeting Tool locked to base", pc, {1,1,1})
         else
             broadcastToColor("Targeting Tool unlocked", pc, {1,1,1})
         end
         return
-
-	elseif n == 9 then
 		
 	else
 		objModel = getObjectFromGUID(GUIDModel)
@@ -317,7 +318,7 @@ self.setName(
 "Hover over and press these buttons:\n" ..
 "- R to select a target\n" ..
 "- 1-4 to change the line color\n" ..
-"- 8 to toggle locking to base\n" ..
+"- 9 to unlock or lock to base\n" ..
 "- 0 to finish"
 )
 self.max_typed_number=9
@@ -330,6 +331,7 @@ pickedUp = true
 startLuaCoroutine(self, "movModel")	
 pickedUp = false
 self.setVectorLines(nil)
+self.setTags({"KTUI_ToolActive"})
 end
 
 
