@@ -82,15 +82,19 @@ function posicionLock()
             SZ = (math.sqrt((rngMov*rngMov)-((SX-posX)*(SX-posX)))*FZ)+posZ
             newX = SX
             newZ = SZ
-            self.setPosition({x=newX, y=posY, z=newZ})
-            self.setVelocity({0,0,0})
-            self.setAngularVelocity({0,0,0})
         end
+        self.setPosition({x=newX, y=posY, z=newZ})
+    else
+        local mouseY = self.getPosition().y
+        self.setPosition({x=newX, y=mouseY, z=newZ})
     end
 
+    self.setVelocity({0,0,0})
+    self.setAngularVelocity({0,0,0})
     self.setRotation({0,0,0})
     refrescaVectores()
 end
+
 
 
 function onDropped(cp)
@@ -286,9 +290,9 @@ function onNumberTyped( pc, n )
     elseif n == 8 then
         lockEnabled = not lockEnabled
         if lockEnabled then
-            broadcastToColor("Position lock ENABLED", pc, {0,1,0})
+            broadcastToColor("Tool locked to base", pc, {1,1,1})
         else
-            broadcastToColor("Position lock DISABLED", pc, {1,0,0})
+            broadcastToColor("Tool unlocked", pc, {1,0,0})
         end
         return
 
@@ -307,6 +311,7 @@ self.setName(
 "Hover over and press these buttons:\n" ..
 "- R to select a target\n" ..
 "- 1-4 to change the line color\n" ..
+"- 8 to toggle locking to base\n" ..
 "- 0 to finish"
 )
 self.max_typed_number=9
