@@ -98,16 +98,22 @@ end
 
 
 function onDropped(cp)
-if pickedUp == true then
-pickedUp = false
-self.setPosition({x=newX, y=posY, z=newZ})
-self.setVelocity({0,0,0})
-self.setAngularVelocity({0,0,0})
-self.setRotation({0,0,0})
---self.setDescription("X:"..newX.."|Z:"..newZ.."|Y:"..posY-posY)
-refrescaVectores()
+    if pickedUp == true then
+        pickedUp = false
+
+        if lockEnabled then
+            self.setPosition({x=newX, y=posY, z=newZ})
+        else
+            local mouseY = self.getPosition().y
+            self.setPosition({x=newX, y=mouseY, z=newZ})
+        end
+
+        self.setVelocity({0,0,0})
+        self.setAngularVelocity({0,0,0})
+        self.setRotation({0,0,0})
+        refrescaVectores()
+    end
 end
-end	
 
 function refrescaVectores()
 lambda = 1
