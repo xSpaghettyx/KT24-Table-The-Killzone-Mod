@@ -465,7 +465,7 @@ function order(player)
     for key,value in pairs(diceTabTemp) do
       diceTabTemp[key].setRotation({x=diceTabTemp[key].getRotation().x,y=self.getRotation().y,z=diceTabTemp[key].getRotation().z})
       local p = -count- 2
-      if player.color == rightColor then p = -p end
+      if player.color == "Blue" or player.color == "Teal" then p = -p end
       diceTabTemp[key].setPositionSmooth(getPoint(p, (-diceValue*1.17)+4.66),false, true)
       count = count + 1.1
     end
