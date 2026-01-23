@@ -29,8 +29,8 @@ local isRolling = {}
 function onLoad()
   leftColor = {"Red","Yellow"}
   rightColor = {"Blue","Teal"}
-    self.addContextMenuItem("Multiplayer Mode ON", multiplayerModeON)
-    self.addContextMenuItem("Multiplayer Mode OFF", multiplayerModeOFF)
+    self.addContextMenuItem("Multiplayer ON", multiplayerModeON)
+    self.addContextMenuItem("Multiplayer OFF", multiplayerModeOFF)
 
   self.registerCollisions(false)
 end
