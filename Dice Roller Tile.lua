@@ -824,7 +824,7 @@ function announceResults(params)
   end
 
   local time = '[' .. os.date("%H") .. ':' .. os.date("%M") .. ':' .. os.date("%S") .. '] '
-  local message = time .. " " .. player_name .. " rolls: " .. result
+  local message = (time or "??") .. " " .. (player_name or "NPO Operative") .. " rolls: " .. (result or "?")
   broadcastToAll(message, stringColorToRGB(color))
   -- add rolls to game log
   local gamelogGuid = 'bafa93'
