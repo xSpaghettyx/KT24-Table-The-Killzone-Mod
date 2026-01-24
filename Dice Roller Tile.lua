@@ -2,6 +2,8 @@
 -- Custom Dice Support
 -- Multiplayer Mode Support
 
+-- UI Roller dice positioning fix by Parasemic
+
 diceTabL = {}
 diceTabR = {}
 diceTabY = {}
@@ -465,7 +467,20 @@ function order(player)
     for key,value in pairs(diceTabTemp) do
       diceTabTemp[key].setRotation({x=diceTabTemp[key].getRotation().x,y=self.getRotation().y,z=diceTabTemp[key].getRotation().z})
       local p = -count- 2
-      if player.color == "Blue" or player.color == "Teal" then p = -p end
+
+-- UI Roller dice positioning fix by Parasemic --
+
+      if player.color == "Blue" or player.color == "Teal" then
+         p = -p
+      end
+			if player.color == "Yellow" or player.color == "Teal" then
+       if p < 0 then
+        p = p - 9    -- further left
+       else
+        p = p + 9    -- further right
+       end
+      end
+------------------------------------------------
       diceTabTemp[key].setPositionSmooth(getPoint(p, (-diceValue*1.17)+4.66),false, true)
       count = count + 1.1
     end
