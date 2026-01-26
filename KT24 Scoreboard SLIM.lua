@@ -888,6 +888,7 @@ function buildTacOpSelector(ch, uy, x, y, w, player, sec)
 end
 
 function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
+  --local h = 90
   local h = 135
   local dd = atrPrimaryOp(player, "dropdown")
   local vp = rules.packet.players[player]
@@ -904,6 +905,7 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
         active=true
       },
       children=optionsFor(rules.scoring.primary.options, "Hidden Primary", dd)
+      --value="Primary Op"
     },
     {
       tag="Text",
@@ -924,8 +926,7 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
         id=atrPrimaryOp(player, "amount"),
         rectAlignment="LowerCenter",
         width=w,
-        height=40,
-        active="false"
+        height=40
       },
       value=string.format("0/%d", rules.scoring.primary.max)
     },
@@ -940,7 +941,31 @@ function buildPrimaryOpSelector(ch, uy, x, y, w, player, sec)
         offsetXY="0 4",
         active=false,
         visibility=vp,
-        text="Reveal Primary Op"
+        text="Reveal"
+      }
+    },
+    {
+      tag="Button",
+      attributes={
+        id=atrPrimaryOp(player, "button_plus"),
+        onClick="onIncreasePrimaryOp",
+        width=80, height=32,
+        fontSize=28,
+        rectAlignment="LowerRight",
+        offsetXY="-4 4",
+        text="+"
+      }
+    },
+    {
+      tag="Button",
+      attributes={
+        id=atrPrimaryOp(player, "button_minus"),
+        onClick="onDecreasePrimaryOp",
+        width=80, height=32,
+        fontSize=28,
+        rectAlignment="LowerLeft",
+        offsetXY="4 4",
+        text="-"
       }
     }
   }
