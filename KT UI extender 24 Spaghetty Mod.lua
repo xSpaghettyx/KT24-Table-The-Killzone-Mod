@@ -422,6 +422,34 @@ function callback_orders(player, value, id)
   saveState()
 end
 
+-- HP Bar ===========================
+function buildHPBar()
+  local maxWounds = state.stats.Wounds or 0
+  local currentWounds = state.wounds or 0
+  local panelWidth = 120
+  local rectHeight = 23
+  local filledWidth = 0
+
+  if maxWounds > 0 then
+    filledWidth = math.floor(panelWidth * currentWounds / maxWounds)
+  end
+
+  local barColor = "#098e00"
+  if currentWounds < (maxWounds / 2) then
+    barColor = "#FF0000"
+  elseif currentWounds < maxWounds then
+    barColor = "#e29300"
+  else
+    barColor = "#098e00"
+  end
+
+  return '<Panel width="'..panelWidth..'" height="'..rectHeight..'" color="#000000" outline="#FF5500" outlineSize="2 2" rectAlignment="LowerCenter" raycastTarget="false">'..
+           '<Panel width="'..filledWidth..'" height="'..rectHeight..'" color="'..barColor..'" rectAlignment="MiddleLeft" raycastTarget="false" />'..
+         '</Panel>'
+end
+
+-- ====================================
+
 function refreshUI()
   local sc = self.getScale()
   local scaleFactorX = 1/sc.x
@@ -433,9 +461,6 @@ function refreshUI()
     return string.format("%d %d", math.cos(ra)*d, math.sin(ra)*d)
   end
 
-  local uid = 50
-  local sv = secretVisibility()
-
   local off_injured = -35
   local off_order = 65
   if state.display_arrows then
@@ -444,37 +469,34 @@ function refreshUI()
   end
 
   local p = getOwningPlayer()
-  local wound_color = "red"
-  if p ~= nil then
-    if p.color ~= "Red" then
-      wound_color = "blue"
-    end
-  end
+  local wound_color = (p ~= nil and p.color ~= "Red") and "blue" or "red"
 
-local position = getUIPosition()
+  local position = getUIPosition()
 
-  local xmlTable = [[<Defaults>
+  local hpBarXML = '<Panel offsetXY="'..circOffset(0, 90)..'" rectAlignment="UpperCenter">'..buildHPBar()..'</Panel>'
+
+local xmlTable = [[<Defaults>
   <Image class="statusDisplay" hideAnimation="Shrink" showAnimation="Grow" preserveAspect="true" />
-</Defaults>
-<Panel position="]]..position..[[" width="100" height="100" rotation="0 0 ]]..(state.uiAngle or 0)..[[" scale="]]..scaleFactorX..[[ ]]..scaleFactorY..[[ ]]..scaleFactorZ..[[">
+ </Defaults>
+ <Panel position="]]..position..[[" width="100" height="100" rotation="0 0 ]]..(state.uiAngle or 0)..[[" scale="]]..scaleFactorX..[[ ]]..scaleFactorY..[[ ]]..scaleFactorZ..[[">
 
   <HorizontalLayout spacing="3" width="@totalSecret" height="20" offsetXY="-30 -10">
     --@EquipmentPlaceholder
     --@SecretsPlaceholder
   </HorizontalLayout>
 
-	<Panel color="#808080" outline="#FF5500" outlineSize="2 2" width="80" height="25" offsetXY="]]..circOffset(40, 270)..[[">
+  ]]..hpBarXML..[[
+
+  <Panel color="#80808000" outline="#FF5500" outlineSize="2 2" width="120" height="25" offsetXY="]]..circOffset(40, 270)..[[">
+    <Text id="ktcnid-status-wounds" text="]]..string.format("%d/%d", state.wounds or 0, state.stats.Wounds or 0)..[[" resizeTextForBestFit="true" color="#ffffff" rectAlignment="UpperCenter" onClick="change_wounds" />
     <Image id="ktcnid-status-injured" image="Wound_]]..wound_color..[[" width="30" height="30" rectAlignment="MiddleLeft" offsetXY="]]..off_injured..[[ 0" active="]]..tostring(isInjured())..[[" />
-		<Button text="-" width="30" height="30" offsetXY="-65 0" onClick="damage" active="]]..tostring((state.display_arrows or false))..[[" />
-		<Text id="ktcnid-status-wounds" text="]]..string.format("%d/%d", state.wounds or 0, state.stats.Wounds or 0)..[[" resizeTextForBestFit="true" color="#ffffff" onClick="toggleArrows" />
-		<Button text="+" width="30" height="30" offsetXY="65 0" onClick="heal" active="]]..tostring((state.display_arrows or false))..[[" />
     <Image id="ktcnid-status-order" image="]]..getCurrentOrder()..[[" rectAlignment="MiddleRight" width="55" height="55" offsetXY="]]..off_order..[[ 0" active="true" onClick="callback_orders" />
-	</Panel>
+  </Panel>
+
   <HorizontalLayout spacing="3" width="@totalAtt" height="30" offsetXY="]]..circOffset(80, 270)..[[">
     --@AttachmentPlaceholder
   </HorizontalLayout>
 </Panel>]]
-
 
 
   local hasRoles = next(state.roles) ~= nil
@@ -550,8 +572,8 @@ function createUI()
     {name="Guard_activated", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Guard.png]=]},
     {name="GuardConceal_ready", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Guard%20Conceal.png]=]},
     {name="GuardConceal_activated", url=[=[https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/Guard%20Conceal.png]=]},
-    {name="Wound_blue",   url=[=[http://cloud-3.steamusercontent.com/ugc/1857171492582455772/CFB7B4D001501AC54B4D0CC7FEE35AF679B73D34/]=]},
-	  {name="Wound_red",   url=[=[http://cloud-3.steamusercontent.com/ugc/1857171826950614938/C515FF37C3D1D269533C1B5FDA675895F792BC15/]=]},
+    {name="Wound_blue",   url=[=[https://steamusercontent-a.akamaihd.net/ugc/1857171492582455772/CFB7B4D001501AC54B4D0CC7FEE35AF679B73D34/]=]},
+	  {name="Wound_red",   url=[=[https://steamusercontent-a.akamaihd.net/ugc/1857171826950614938/C515FF37C3D1D269533C1B5FDA675895F792BC15/]=]},
   }
 
   for _,i in pairs(state.attachments) do
@@ -564,22 +586,45 @@ function isInjured()
   return state.stats.Wounds and state.wounds < state.stats.Wounds / 2 or false
 end
 
+local notifyTimer = nil
+local pendingMessage = nil
+
+-- notification logic update ==============================
 function notify(pc, message)
   if type(pc) == "userdata" then
     pc = pc.color
   end
-  local owner = getOwningPlayer()
-  if pc == owner.color then
-    owner.broadcast(message)
-  else
-    owner.broadcast(string.format("%s: %s", Player[pc].name, message))
-    Player[pc].broadcast(message)
+
+  pendingMessage = message
+
+  if notifyTimer then
+    Timer.destroy(notifyTimer)
+    notifyTimer = nil
   end
+
+  notifyTimer = "notifyTimer_" .. math.random(1000000)
+  Timer.create({
+    identifier = notifyTimer,
+    function_name = "notifyBroadcast",
+    delay = 0.7
+  })
+end
+-- ======================================================
+
+function notifyBroadcast()
+  if pendingMessage then
+    broadcastToAll(pendingMessage)
+    pendingMessage = nil
+  end
+  notifyTimer = nil
 end
 
-function toggleArrows()
-  state.display_arrows = not state.display_arrows
-  refreshUI()
+function change_wounds(player, value, id)
+  if value == "-1" then
+    damage()
+  elseif value == "-2" then
+    heal()
+  end
 end
 
 function damage(pc)
@@ -590,6 +635,7 @@ function damage(pc)
   end
   saveState()
   refreshWounds()
+  refreshUI()
   notify(pc, string.format("%s took damage", self.getName()))
 end
 
@@ -601,6 +647,7 @@ function heal(pc)
   end
   saveState()
   refreshWounds()
+  refreshUI()
   notify(pc, string.format("%s recovered", self.getName()))
 end
 
