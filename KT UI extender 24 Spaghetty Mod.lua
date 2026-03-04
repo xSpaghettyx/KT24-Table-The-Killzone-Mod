@@ -423,10 +423,25 @@ function callback_orders(player, value, id)
 end
 
 -- HP Bar ===========================
+local function getWoundPanelWidth()
+  local wounds = state.stats and state.stats.Wounds or 0
+  if wounds <= 7 then
+    return 60
+  if wounds <= 10 then
+    return 80
+  if wounds <= 14 then
+    return 100
+  elseif wounds <= 18 then
+    return 120
+  else
+    return 140
+  end
+end
+
 function buildHPBar()
   local maxWounds = state.stats.Wounds or 0
   local currentWounds = state.wounds or 0
-  local panelWidth = 120
+  local panelWidth = getWoundPanelWidth()
   local rectHeight = 23
   local filledWidth = 0
 
@@ -475,28 +490,30 @@ function refreshUI()
 
   local hpBarXML = '<Panel offsetXY="'..circOffset(0, 90)..'" rectAlignment="UpperCenter">'..buildHPBar()..'</Panel>'
 
-local xmlTable = [[<Defaults>
-  <Image class="statusDisplay" hideAnimation="Shrink" showAnimation="Grow" preserveAspect="true" />
- </Defaults>
- <Panel position="]]..position..[[" width="100" height="100" rotation="0 0 ]]..(state.uiAngle or 0)..[[" scale="]]..scaleFactorX..[[ ]]..scaleFactorY..[[ ]]..scaleFactorZ..[[">
+  local woundPanelWidth = getWoundPanelWidth()
 
-  <HorizontalLayout spacing="3" width="@totalSecret" height="20" offsetXY="-30 -10">
-    --@EquipmentPlaceholder
-    --@SecretsPlaceholder
-  </HorizontalLayout>
+  local xmlTable = [[<Defaults>
+    <Image class="statusDisplay" hideAnimation="Shrink" showAnimation="Grow" preserveAspect="true" />
+   </Defaults>
+   <Panel position="]]..position..[[" width="100" height="100" rotation="0 0 ]]..(state.uiAngle or 0)..[[" scale="]]..scaleFactorX..[[ ]]..scaleFactorY..[[ ]]..scaleFactorZ..[[">
 
-  ]]..hpBarXML..[[
+    <HorizontalLayout spacing="3" width="@totalSecret" height="20" offsetXY="-30 -10">
+      --@EquipmentPlaceholder
+      --@SecretsPlaceholder
+    </HorizontalLayout>
 
-  <Panel color="#80808000" outline="#FF5500" outlineSize="2 2" width="120" height="25" offsetXY="]]..circOffset(40, 270)..[[">
-    <Text id="ktcnid-status-wounds" text="]]..string.format("%d/%d", state.wounds or 0, state.stats.Wounds or 0)..[[" resizeTextForBestFit="true" color="#ffffff" rectAlignment="UpperCenter" onClick="change_wounds" />
-    <Image id="ktcnid-status-injured" image="Wound_]]..wound_color..[[" width="30" height="30" rectAlignment="MiddleLeft" offsetXY="]]..off_injured..[[ 0" active="]]..tostring(isInjured())..[[" />
-    <Image id="ktcnid-status-order" image="]]..getCurrentOrder()..[[" rectAlignment="MiddleRight" width="55" height="55" offsetXY="]]..off_order..[[ 0" active="true" onClick="callback_orders" />
-  </Panel>
+    ]]..hpBarXML..[[
 
-  <HorizontalLayout spacing="3" width="@totalAtt" height="30" offsetXY="]]..circOffset(80, 270)..[[">
-    --@AttachmentPlaceholder
-  </HorizontalLayout>
-</Panel>]]
+    <Panel color="#80808000" outline="#FF5500" outlineSize="2 2" width="]]..woundPanelWidth..[[" height="25" offsetXY="]]..circOffset(40, 270)..[[">
+      <Text id="ktcnid-status-wounds" text="]]..string.format("%d/%d", state.wounds or 0, state.stats.Wounds or 0)..[[" resizeTextForBestFit="true" color="#ffffff" rectAlignment="UpperCenter" onClick="change_wounds" />
+      <Image id="ktcnid-status-injured" image="Wound_]]..wound_color..[[" width="30" height="30" rectAlignment="MiddleLeft" offsetXY="]]..off_injured..[[ 0" active="]]..tostring(isInjured())..[[" />
+      <Image id="ktcnid-status-order" image="]]..getCurrentOrder()..[[" rectAlignment="MiddleRight" width="55" height="55" offsetXY="]]..off_order..[[ 0" active="true" onClick="callback_orders" />
+    </Panel>
+
+    <HorizontalLayout spacing="3" width="@totalAtt" height="30" offsetXY="]]..circOffset(80, 270)..[[">
+      --@AttachmentPlaceholder
+    </HorizontalLayout>
+  </Panel>]]
 
 
   local hasRoles = next(state.roles) ~= nil
