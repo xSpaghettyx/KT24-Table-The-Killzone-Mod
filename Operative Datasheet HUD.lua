@@ -155,19 +155,11 @@ function deleteDatasheetHUD(playerColor)
     UI.setXmlTable(filtered, {player=playerColor})
 end
 
-function refreshDatasheetHUD(playerColor)
-    local suffix = "_"..playerColor
-    local mainStat = UI.getAttribute("statsNameText"..suffix, "text", {player=playerColor}) or "Operative name"
-    local sub1 = UI.getAttribute("statsAPLText"..suffix, "text", {player=playerColor}) or "APL"
-    local sub2 = UI.getAttribute("statsMoveText"..suffix, "text", {player=playerColor}) or "move"
-    local sub3 = UI.getAttribute("statsSaveText"..suffix, "text", {player=playerColor}) or "save"
-    local sub4 = UI.getAttribute("statsWoundsText"..suffix, "text", {player=playerColor}) or "wounds"
-    local weapons = UI.getAttribute("hudMiddleText"..suffix, "text", {player=playerColor}) or "weapons"
-    local abilities = UI.getAttribute("hudBottomText"..suffix, "text", {player=playerColor}) or "abilities"
-
-    deleteDatasheetHUD(playerColor)
-    createDatasheetHUD(playerColor)
-    updateDatasheetHUD(playerColor, mainStat, sub1, sub2, sub3, sub4, weapons, abilities)
+function refreshDatasheetHUDAll()
+    for _, color in ipairs(Player.getColors()) do
+        UI.setXmlTable({}, {player=color})
+        createDatasheetHUD(color)
+    end
 end
 
 function ensureDatasheetHUD(playerColor)
@@ -189,10 +181,12 @@ function ensureDatasheetHUD(playerColor)
     end
 end
 
-function onObjectRandomize(obj, playerColor)
-    if obj.hasTag("Operative") then
-        local operativeName = obj.getName()
+function onOperativeRandomize(params)
+    local operative = params[1]
+    local playerColor = params[2]
 
+    if operative.hasTag("Operative") then
+        local operativeName = operative.getName()
         ensureDatasheetHUD(playerColor)
         updateDatasheetHUD(playerColor, {
             name = operativeName,

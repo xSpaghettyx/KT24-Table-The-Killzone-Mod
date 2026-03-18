@@ -837,13 +837,14 @@ function onPickUp(pc)
   end
 end
 
-function tryRandomize(pc)
-  rangeShown = not rangeShown
-  measureColor = nil
-  measureRange = 0
-  refreshVectors()
+function tryRandomize(playerColor)
+    local manager = getObjectFromGUID("efa3fe")
+    if not manager then
+        return false
+    end
+    manager.call("onOperativeRandomize", { self, playerColor })
 
-  return false
+    return false
 end
 
 function getOwningPlayer()
