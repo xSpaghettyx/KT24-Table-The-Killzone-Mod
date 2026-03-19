@@ -9,6 +9,9 @@ function onLoad()
     self.addContextMenuItem("Refresh Datasheet HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
 end
 
+--============================================================================
+--============================================================================
+
 function createDatasheetHUD(playerColor)
     local suffix = "_"..playerColor
 
@@ -32,6 +35,9 @@ function createDatasheetHUD(playerColor)
     local statsBGColor = "#222222DD"
 
     -- Weapons panel formatting
+
+    local weaponInfo_1 = buildWeaponInfoRow(1, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
+
     local weaponsPanelHeight = 25
     local totalWeaponsSpacing = spacing * 5
     local usableWeaponsWidth = bodyWidth - totalWeaponsSpacing
@@ -41,6 +47,7 @@ function createDatasheetHUD(playerColor)
     local weaponRulesWidth = math.floor(usableWeaponsWidth * 7/15)
 
     local weaponBGColor = "#ffffffc5"
+    local weaponBGColor2 = "#c5c5c5c5"
     local weaponsSeparatorHeight = 3
 
     -- Abilities panel formatting
@@ -169,15 +176,15 @@ local xmlNode = {
                 {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
             }
         },
+--        {
+--            tag="Panel",
+--           attributes={id="weaponInfo_module", width=tostring(bodyWidth), rectAlignment="UpperLeft"},
+--            children={
+--                weaponInfo_1
+--            }
+--        },
         {
-            tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight), rectAlignment="UpperLeft"},
-            children={
-                {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(basePanelHeight)}},
-                {tag="Text", attributes={id="hudBottomText"..suffix, text="abilities", fontSize="24", color="#FFFFFF", alignment="MiddleCenter"}}
-            }
-        },
-        {
-            tag="Panel", attributes={id="weaponsHUD_separatortop"..suffix, flexibleWidth="true", preferredHeight=weaponsSeparatorHeight, rectAlignment="UpperLeft"},
+            tag="Panel", attributes={id="weaponsHUD_separatorbottom"..suffix, flexibleWidth="true", preferredHeight=weaponsSeparatorHeight, rectAlignment="UpperLeft"},
             children={
                 {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
             }
@@ -196,6 +203,71 @@ local xmlNode = {
     local current = UI.getXmlTable({player=playerColor}) or {}
     table.insert(current, xmlNode)
     UI.setXmlTable(current, {player=playerColor})
+end
+--============================================================================
+--============================================================================
+
+
+
+
+-- Weapon Info Module
+
+function buildWeaponInfoRow(idSuffix, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
+    local suffix = "_"..tostring(idSuffix)
+
+    return {
+        tag="HorizontalLayout",
+        attributes={
+            width=tostring(bodyWidth),
+            preferredHeight=tostring(weaponsPanelHeight),
+            spacing=tostring(spacing),
+            rectAlignment="UpperLeft"
+        },
+        children={
+            {
+                tag="Panel", attributes={id="weaponIcon"..suffix, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="weaponName"..suffix, preferredWidth=weaponNameWidth, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="weaponATK"..suffix, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="weaponHIT"..suffix, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="weaponDMG"..suffix, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="weaponWR"..suffix, preferredWidth=weaponRulesWidth, height=tostring(weaponsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            }
+        }
+    }
 end
 
 local function safeSetAttribute(id, attr, value, playerColor)
