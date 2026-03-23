@@ -9,210 +9,246 @@ function onLoad()
     self.addContextMenuItem("Refresh Datasheet HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
 end
 
---============================================================================
---============================================================================
-
-function createDatasheetHUD(playerColor)
-    local suffix = "_"..playerColor
-
-    -- Base formatting
-    local basePanelHeight = 30
-   
-    local spacing = 2
-    local bodyWidth = 700
-
-    local orangeColor = "#ff5e00"
-
-    -- Stats panel formatting
-    local statsPanelHeight = 60
-    local statsPanelSubHeight = 28
-    local StatsSubPanels = 4
-    local usableStatsWidth = bodyWidth - spacing
-    local statsNameWidth = math.floor(usableStatsWidth * 6/11)
-
-    local nameLineSize = 350
-
-    local statsBGColor = "#222222DD"
-
-    -- Weapons panel formatting
-
-    local weaponInfo_1 = buildWeaponInfoRow(1, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
-
-    local weaponsPanelHeight = 25
-    local totalWeaponsSpacing = 0
-    local usableWeaponsWidth = bodyWidth - totalWeaponsSpacing
-    local weaponNameWidth = math.floor(usableWeaponsWidth * 0.25)
-    local weaponRulesWidth = math.floor(usableWeaponsWidth * 0.45)
-
-    local weaponBGColor = "#ffffffc5"
-    local weaponBGColor2 = "#c5c5c5c5"
-    local weaponsSeparatorHeight = 3
-
-    local weaponRows = {
-        buildWeaponInfoRow(1, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth),
-        buildWeaponInfoRow(2, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth),
-        buildWeaponInfoRow(3, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
-    }
-
-    -- Abilities panel formatting
-    local abilitiesPanels = {"ability1", "ability2"}
-    local numAbilities = #abilitiesPanels
-    local totalAbilitiesSpacing = spacing * numAbilities
-    local usableAbilitiesWidth = bodyWidth - totalAbilitiesSpacing
-
-local xmlNode = {
-    tag="VerticalLayout",
-    attributes={
-        id="datasheetHUD_body"..suffix,
-        width=tostring(bodyWidth),
-        height=300,
-        rectAlignment="MiddleRight",
-        spacing=tostring(spacing),
-        allowDragging="true",
-        returnToOriginalPositionWhenReleased="false"
-    },
-    children={
--- STATS PANEL =========================================================
-        {
-            tag="HorizontalLayout",
-            attributes={spacing=tostring(spacing), width=tostring(bodyWidth), preferredHeight=statsPanelHeight, rectAlignment="UpperLeft"},
-            children={
-                {
-                    tag="Panel", attributes={id="stats_name"..suffix, preferredwidth=statsNameWidth, height=tostring(statsPanelHeight), rectAlignment="UpperLeft"},
-                    children={
-                        {tag="Image", attributes={color=statsBGColor, flexibleWidth="true", height=tostring(statsPanelHeight)}},
-                        {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height="3", position="0 -10 0"}},
-                        {tag="Text", attributes={id="statsNameText"..suffix, text="Operative name", fontSize="18", fontStyle="Bold", color="#FFFFFF", overflow="Shrink", alignment="MiddleLeft", position="10 0 0"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="stats_APL"..suffix, height=tostring(statsPanelHeight)},
-                    children={
-                        {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                        {tag="Text", attributes={id="statsAPLHeader"..suffix, text="APL", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                        {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
-                        {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="stats_move"..suffix, height=tostring(statsPanelHeight)},
-                    children={
-                        {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                        {tag="Text", attributes={id="statsMoveHeader"..suffix, text="MOVE", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                        {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
-                        {tag="Text", attributes={id="statsMoveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="stats_save"..suffix, height=tostring(statsPanelHeight)},
-                    children={
-                        {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                        {tag="Text", attributes={id="statsSaveHeader"..suffix, text="SAVE", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                        {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
-                        {tag="Text", attributes={id="statsSaveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="stats_wounds"..suffix, height=tostring(statsPanelHeight)},
-                    children={
-                        {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                        {tag="Text", attributes={id="statsWoundsHeader"..suffix, text="WOUNDS", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                        {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
-                        {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
-                    }
-                }
-            }
-        },
--- WEAPONS PANEL =========================================================
--- Header
-        {
-            tag="HorizontalLayout",
-            attributes={width=tostring(bodyWidth), preferredHeight=weaponsPanelHeight, spacing="0", rectAlignment="UpperLeft"},
-            children={
-                {   
-                    tag="Panel", attributes={id="weaponsHeaderBlank"..suffix, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="weaponsHeaderName"..suffix, preferredWidth=weaponNameWidth, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Text", attributes={id="weaponsHeaderNameText"..suffix, text="NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="weaponsHeaderATK"..suffix, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Text", attributes={id="weaponsHeaderATKText"..suffix, text="ATK", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="weaponsHeaderHIT"..suffix, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Text", attributes={id="weaponsHeaderHITText"..suffix, text="HIT", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="weaponsHeaderDMG"..suffix, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Text", attributes={id="weaponsHeaderDMGText"..suffix, text="DMG", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
-                    }
-                },
-                {
-                    tag="Panel", attributes={id="weaponsHeaderWR"..suffix, preferredWidth=weaponRulesWidth, height=tostring(weaponsPanelHeight)},
-                        children={
-                            {tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},
-                            {tag="Text", attributes={id="weaponsHeaderWRText"..suffix, text="WR", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
-                    }
-                }
-            }
-        },
--- Main info
-        {
-            tag="Panel", attributes={id="weaponsHUD_separatortop"..suffix, flexibleWidth="true", preferredHeight=weaponsSeparatorHeight, rectAlignment="UpperLeft"},
-            children={
-                {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
-            }
-        },
-        {
-            tag="Panel", attributes={id="weaponsHUD_separatorbottom"..suffix, flexibleWidth="true", preferredHeight=weaponsSeparatorHeight, rectAlignment="UpperLeft"},
-            children={
-                {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
-            }
-        },
--- ABILITIES PANEL =========================================================
-        {
-            tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight), rectAlignment="UpperLeft"},
-            children={
-                {tag="Image", attributes={color="#444444DD", flexibleWidth="true", height=tostring(basePanelHeight)}},
-                {tag="Text", attributes={id="hudBottomText"..suffix, text="abilities", fontSize="24", color="#FFFFFF", alignment="MiddleCenter"}}
-            }
-        }
-    }
-}
+function createDatasheetHUD(playerColor, suffix, weaponCount)
+    suffix = suffix or "_"..playerColor
 
     local current = UI.getXmlTable({player=playerColor}) or {}
+    for _, node in ipairs(current) do
+        if node.attributes and node.attributes.id == "datasheetHUD_body"..suffix then
+            return
+        end
+    end
+    local bodyWidth = 600
+    local bodyHeight = 300
+    local spacing = 5
+    local statsPanelHeight = 50
+    local statsNameWidth = 200
+    local statsBGColor = "#222222"
+    local orangeColor = "#FF8800"
+    local weaponsPanelHeight = 40
+    local weaponNameWidth = 150
+    local weaponRulesWidth = 200
+    local weaponBGColor = "#CCCCCC"
+    local weaponsSeparatorHeight = 2
+    local basePanelHeight = 100
+
+    local xmlNode = buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
+                                      statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
+                                      weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
+                                      weaponsSeparatorHeight, basePanelHeight)
+
     table.insert(current, xmlNode)
     UI.setXmlTable(current, {player=playerColor})
 end
---============================================================================
---============================================================================
 
+function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
+                           statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
+                           weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
+                           weaponsSeparatorHeight, basePanelHeight,
+                           weaponCount)
 
+    weaponCount = weaponCount or 3
 
+    local children = {}
+
+    -- Stats Panel
+    table.insert(children, {
+        tag="Panel",
+        attributes={
+            id="statsPanel"..suffix,
+            preferredHeight=tostring(statsPanelHeight),
+            flexibleWidth="true"
+        },
+        children={ buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor) }
+    })
+
+    -- Weapons Header
+    table.insert(children, {
+        tag="Panel",
+        attributes={
+            id="weaponsHeader"..suffix,
+            preferredHeight=tostring(weaponsPanelHeight),
+            flexibleWidth="true"
+        },
+        children={ buildWeaponsHeader(suffix, bodyWidth, weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor, orangeColor) }
+    })
+
+    -- Top Separator
+    table.insert(children, {
+        tag="Panel",
+        attributes={
+            id="topSeparator"..suffix,
+            preferredHeight=tostring(weaponsSeparatorHeight),
+            flexibleWidth="true"
+        },
+        children=buildWeaponsSeparator(suffix.."_top", weaponsSeparatorHeight, orangeColor)
+    })
+
+    -- Weapon Info Panels
+    for i=1,weaponCount do
+        table.insert(children, {
+            tag="Panel",
+            attributes={
+                id="weaponRow"..i..suffix,
+                preferredHeight=tostring(weaponsPanelHeight),
+                flexibleWidth="true"
+            },
+            children={ buildWeaponInfoRow(i, bodyWidth, weaponsPanelHeight, spacing,
+                                          weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth) }
+        })
+    end
+
+    -- Bottom Separator
+    table.insert(children, {
+        tag="Panel",
+        attributes={
+            id="bottomSeparator"..suffix,
+            preferredHeight=tostring(weaponsSeparatorHeight),
+            flexibleWidth="true"
+        },
+        children=buildWeaponsSeparator(suffix.."_bottom", weaponsSeparatorHeight, orangeColor)
+    })
+
+    -- Abilities Panel
+    table.insert(children, {
+        tag="Panel",
+        attributes={
+            id="abilitiesPanel"..suffix,
+            preferredHeight=tostring(basePanelHeight),
+            flexibleWidth="true"
+        },
+        children={ buildAbilitiesPanel(suffix, basePanelHeight) }
+    })
+
+    return {
+        tag="VerticalLayout",
+        attributes={
+            id="datasheetHUD_body"..suffix,
+            width=tostring(bodyWidth),
+            height=tostring(bodyHeight),
+            rectAlignment="MiddleRight",
+            spacing=tostring(spacing),
+            allowDragging="true",
+            returnToOriginalPositionWhenReleased="false"
+        },
+        children=children
+    }
+end
+
+-- Build Stats Panel
+function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor)
+    return {
+        tag="HorizontalLayout",
+        attributes={spacing=tostring(spacing), width=tostring(bodyWidth), preferredHeight=statsPanelHeight, rectAlignment="UpperLeft"},
+        children={
+            {
+                tag="Panel", attributes={id="stats_name"..suffix, preferredwidth=statsNameWidth, height=tostring(statsPanelHeight), rectAlignment="UpperLeft"},
+                children={
+                    {tag="Image", attributes={color=statsBGColor, flexibleWidth="true", height=tostring(statsPanelHeight)}},
+                    {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height="3", position="0 -10 0"}},
+                    {tag="Text", attributes={id="statsNameText"..suffix, text="Operative name", fontSize="18", fontStyle="Bold", color="#FFFFFF", overflow="Shrink", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="stats_APL"..suffix, height=tostring(statsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
+                    {tag="Text", attributes={id="statsAPLHeader"..suffix, text="APL", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="stats_move"..suffix, height=tostring(statsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
+                    {tag="Text", attributes={id="statsMoveHeader"..suffix, text="MOVE", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsMoveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="stats_save"..suffix, height=tostring(statsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
+                    {tag="Text", attributes={id="statsSaveHeader"..suffix, text="SAVE", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsSaveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
+                }
+            },
+            {
+                tag="Panel", attributes={id="stats_wounds"..suffix, height=tostring(statsPanelHeight)},
+                children={
+                    {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
+                    {tag="Text", attributes={id="statsWoundsHeader"..suffix, text="WOUNDS", fontSize="13", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
+                }
+            }
+        }
+    }
+end
+
+-- Build Weapons Header
+function buildWeaponsHeader(suffix, bodyWidth, weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor, orangeColor)
+    return {
+        tag="HorizontalLayout",
+        attributes={width=tostring(bodyWidth), preferredHeight=weaponsPanelHeight, spacing="0", rectAlignment="UpperLeft"},
+        children={
+            {tag="Panel", attributes={id="weaponsHeaderBlank"..suffix, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}}},
+            {tag="Panel", attributes={id="weaponsHeaderName"..suffix, preferredWidth=weaponNameWidth, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderNameText"..suffix, text="NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}}},
+            {tag="Panel", attributes={id="weaponsHeaderATK"..suffix, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderATKText"..suffix, text="ATK", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}}},
+            {tag="Panel", attributes={id="weaponsHeaderHIT"..suffix, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderHITText"..suffix, text="HIT", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}}},
+            {tag="Panel", attributes={id="weaponsHeaderDMG"..suffix, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderDMGText"..suffix, text="DMG", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}}},
+            {tag="Panel", attributes={id="weaponsHeaderWR"..suffix, preferredWidth=weaponRulesWidth, height=tostring(weaponsPanelHeight)},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderWRText"..suffix, text="WR", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}}}
+        }
+    }
+end
+
+-- Build Weapons Separator
+function buildWeaponsSeparator(suffix, weaponsSeparatorHeight, orangeColor)
+    return {
+        {
+            tag="Panel",
+            attributes={
+                id="weaponsHUD_separator"..suffix,
+                flexibleWidth="true",
+                preferredHeight=weaponsSeparatorHeight,
+                rectAlignment="UpperLeft"
+            },
+            children={
+                {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
+            }
+        }
+    }
+end
+
+-- Build  Abilities Panel
+
+function buildAbilitiesPanel(suffix, basePanelHeight)
+    return {
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight), rectAlignment="UpperLeft"},
+        children={
+            {tag="Image", attributes={color="#444444DD", flexibleWidth="true", height=tostring(basePanelHeight)}},
+            {tag="Text", attributes={id="hudBottomText"..suffix, text="abilities", fontSize="24", color="#FFFFFF", alignment="MiddleCenter"}}
+        }
+    }
+end
 
 -- Weapon Info Module
 
-function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing, weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
+function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
+                            weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
+
     local suffix = "_"..tostring(idWeapon)
 
-    local row = {
+    return {
         tag = "HorizontalLayout",
         attributes = {
             width = tostring(bodyWidth),
@@ -220,58 +256,57 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing, we
             spacing = tostring(spacing),
             rectAlignment = "UpperLeft"
         },
-        children = {}
+        children = {
+            -- Icon
+            {
+                tag = "Panel", attributes = {id = "weaponIcon"..suffix, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}
+                }
+            },
+            -- Name
+            {
+                tag = "Panel", attributes = {id = "weaponName"..suffix, preferredWidth = weaponNameWidth, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            },
+            -- ATK
+            {
+                tag = "Panel", attributes = {id = "weaponATK"..suffix, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                }
+            },
+            -- HIT
+            {
+                tag = "Panel", attributes = {id = "weaponHIT"..suffix, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                }
+            },
+            -- DMG
+            {
+                tag = "Panel", attributes = {id = "weaponDMG"..suffix, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                }
+            },
+            -- WR
+            {
+                tag = "Panel", attributes = {id = "weaponWR"..suffix, preferredWidth = weaponRulesWidth, height = tostring(weaponsPanelHeight)},
+                children = {
+                    {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
+                    {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                }
+            }
+        }
     }
-
-    local iconPanel = {
-        tag = "Panel", attributes = {id = "weaponIcon"..suffix, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(iconPanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(iconPanel.children, {tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}})
-    table.insert(row.children, iconPanel)
-
-    local namePanel = {
-        tag = "Panel", attributes = {id = "weaponName"..suffix, preferredWidth = weaponNameWidth, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(namePanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(namePanel.children, {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}})
-    table.insert(row.children, namePanel)
-
-    local atkPanel = {
-        tag = "Panel", attributes = {id = "weaponATK"..suffix, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(atkPanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(atkPanel.children, {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}})
-    table.insert(row.children, atkPanel)
-
-    local hitPanel = {
-        tag = "Panel", attributes = {id = "weaponHIT"..suffix, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(hitPanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(hitPanel.children, {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}})
-    table.insert(row.children, hitPanel)
-
-    local dmgPanel = {
-        tag = "Panel", attributes = {id = "weaponDMG"..suffix, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(dmgPanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(dmgPanel.children, {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}})
-    table.insert(row.children, dmgPanel)
-
-    local wrPanel = {
-        tag = "Panel", attributes = {id = "weaponWR"..suffix, preferredWidth = weaponRulesWidth, height = tostring(weaponsPanelHeight)},
-        children = {}
-    }
-    table.insert(wrPanel.children, {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}})
-    table.insert(wrPanel.children, {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}})
-    table.insert(row.children, wrPanel)
-
-    return row
 end
 
 local function safeSetAttribute(id, attr, value, playerColor)
@@ -315,20 +350,14 @@ end
 function ensureDatasheetHUD(playerColor)
     local suffix = "_"..playerColor
     local current = UI.getXmlTable({player=playerColor})
-    local found = false
-
     if current then
         for _, node in ipairs(current) do
             if node.attributes and node.attributes.id == "datasheetHUD_body"..suffix then
-                found = true
-                break
+                return
             end
         end
     end
-
-    if not found then
-        createDatasheetHUD(playerColor)
-    end
+    createDatasheetHUD(playerColor, suffix)
 end
 
 local function cleanDescription(desc)
@@ -341,7 +370,6 @@ local function extractStat(desc, keyword)
     local value = desc:match(pattern)
     return value or "?"
 end
-
 
 function onOperativeRandomize(params)
     local operative = params[1]
@@ -360,6 +388,7 @@ function onOperativeRandomize(params)
         local wounds = extractStat(cleanDesc, "WOUNDS")
 
         ensureDatasheetHUD(playerColor)
+
         updateDatasheetHUD(playerColor, {
             name     = operativeName,
             apl      = apl,
@@ -371,8 +400,6 @@ function onOperativeRandomize(params)
         })
     end
 end
-
-
 
 function extractOperativeName(rawName)
     local parts = {}
