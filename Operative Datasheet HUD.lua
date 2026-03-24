@@ -145,43 +145,43 @@ function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, sp
                 children={
                     {tag="Image", attributes={color=statsBGColor, flexibleWidth="true", height=tostring(statsPanelHeight)}},
                     {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height="3", position="0 -10 0"}},
-                    {tag="Text", attributes={id="statsNameText"..suffix, text="Operative name", fontSize="16", fontStyle="Bold", color="#FFFFFF", overflow="Shrink", alignment="MiddleLeft", position="10 0 0"}}
+                    {tag="Text", attributes={id="statsNameText"..suffix, text="Operative name", fontSize="18", fontStyle="Bold", color="#FFFFFF", overflow="Shrink", alignment="MiddleLeft", position="10 0 0"}}
                 }
             },
             {
                 tag="Panel", attributes={id="stats_APL"..suffix, height=tostring(statsPanelHeight)},
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                    {tag="Text", attributes={id="statsAPLHeader"..suffix, text="APL", fontSize="12", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="statsAPLHeader"..suffix, text="APL", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             },
             {
                 tag="Panel", attributes={id="stats_move"..suffix, height=tostring(statsPanelHeight)},
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                    {tag="Text", attributes={id="statsMoveHeader"..suffix, text="MOVE", fontSize="12", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsMoveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="statsMoveHeader"..suffix, text="MOVE", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsMoveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             },
             {
                 tag="Panel", attributes={id="stats_save"..suffix, height=tostring(statsPanelHeight)},
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                    {tag="Text", attributes={id="statsSaveHeader"..suffix, text="SAVE", fontSize="12", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-14 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsSaveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="14 -9 0", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="statsSaveHeader"..suffix, text="SAVE", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsSaveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             },
             {
                 tag="Panel", attributes={id="stats_wounds"..suffix, height=tostring(statsPanelHeight)},
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
-                    {tag="Text", attributes={id="statsWoundsHeader"..suffix, text="WOUNDS", fontSize="12", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-13 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="13 -9 0", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="statsWoundsHeader"..suffix, text="WOUNDS", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
+                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             }
         }
