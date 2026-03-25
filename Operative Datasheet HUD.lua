@@ -19,7 +19,7 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
         end
     end
     local bodyWidth = 600
-    local bodyHeight = 300
+    local bodyHeight = 500
     local spacing = 2
     local statsPanelHeight = 50
     local statsNameWidth = 350
@@ -51,24 +51,28 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
 
     local children = {}
 
-    -- Stats Panel
+    -- Stats Panel (offset 0)
     table.insert(children, {
         tag="Panel",
         attributes={
             id="statsPanel"..suffix,
-            preferredHeight=tostring(statsPanelHeight),
-            flexibleWidth="true"
+            height=tostring(statsPanelHeight),
+            flexibleWidth="true",
+            offsetXY="0 0",
+            rectAlignment="UpperLeft"
         },
         children={ buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor) }
     })
 
-    -- Weapons Header
+    -- Weapons Header (offset = statsPanelHeight + spacing)
     table.insert(children, {
         tag="Panel",
         attributes={
             id="weaponsHeader"..suffix,
-            preferredHeight=tostring(weaponsPanelHeight),
-            flexibleWidth="true"
+            height=tostring(weaponsPanelHeight),
+            flexibleWidth="true",
+            offsetXY="0 -50",
+            rectAlignment="UpperLeft"
         },
         children={ buildWeaponsHeader(suffix, bodyWidth, weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor, orangeColor) }
     })
@@ -78,20 +82,26 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         tag="Panel",
         attributes={
             id="topSeparator"..suffix,
-            preferredHeight=tostring(weaponsSeparatorHeight),
-            flexibleWidth="true"
+            height=tostring(weaponsSeparatorHeight),
+            flexibleWidth="true",
+            offsetXY="0 -88",
+            rectAlignment="UpperLeft"
         },
         children=buildWeaponsSeparator(suffix.."_top", weaponsSeparatorHeight, orangeColor)
     })
 
     -- Weapon Info Panels
     for i=1,weaponCount do
+        local yOffset = -(90 + weaponsPanelHeight * (i - 1))
+
         table.insert(children, {
             tag="Panel",
             attributes={
                 id="weaponRow"..i..suffix,
-                preferredHeight=tostring(weaponsPanelHeight),
-                flexibleWidth="true"
+                height=tostring(weaponsPanelHeight),
+                flexibleWidth="true",
+                offsetXY = "0 "..tostring(yOffset),
+                rectAlignment="UpperLeft"
             },
             children={ buildWeaponInfoRow(i, bodyWidth, weaponsPanelHeight, spacing,
                                           weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth) }
@@ -99,28 +109,36 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
     end
 
     -- Bottom Separator
+    local bottomOffset = -(90 + weaponsPanelHeight * weaponCount)
+
     table.insert(children, {
         tag="Panel",
         attributes={
             id="bottomSeparator"..suffix,
-            preferredHeight=tostring(weaponsSeparatorHeight),
-            flexibleWidth="true"
+            height=tostring(weaponsSeparatorHeight),
+            flexibleWidth="true",
+            offsetXY="0 "..tostring(bottomOffset),
+            rectAlignment="UpperLeft"
         },
         children=buildWeaponsSeparator(suffix.."_bottom", weaponsSeparatorHeight, orangeColor)
     })
 
     -- Abilities Panel
+    local abilitiesOffset = bottomOffset
     table.insert(children, {
         tag="Panel",
         attributes={
             id="abilitiesPanel"..suffix,
-            flexibleWidth="true"
+            height=tostring(basePanelHeight),
+            flexibleWidth="true",
+            offsetXY="0 "..tostring(bottomOffset),
+            rectAlignment="UpperLeft"
         },
         children={ buildAbilitiesPanel(suffix, basePanelHeight) }
     })
 
     return {
-        tag="VerticalLayout",
+        tag="Panel",
         attributes={
             id="datasheetHUD_body"..suffix,
             width=tostring(bodyWidth),
@@ -130,7 +148,17 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             allowDragging="true",
             returnToOriginalPositionWhenReleased="false"
         },
-        children=children
+        children={
+            {
+                tag="Panel",
+                attributes={
+                    id="datasheetHUD_panel"..suffix,
+                    width=tostring(bodyWidth),
+                    height=tostring(bodyHeight)
+                },
+                children=children
+            }
+        }
     }
 end
 
@@ -138,7 +166,7 @@ end
 function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor)
     return {
         tag="HorizontalLayout",
-        attributes={spacing=tostring(spacing), width=tostring(bodyWidth), preferredHeight=statsPanelHeight, rectAlignment="UpperLeft"},
+        attributes={spacing=tostring(spacing), width=tostring(bodyWidth), height=tostring(statsPanelHeight), rectAlignment="UpperLeft"},
         children={
             {
                 tag="Panel", attributes={id="stats_name"..suffix, preferredwidth=statsNameWidth, height=tostring(statsPanelHeight), rectAlignment="UpperLeft"},
@@ -192,7 +220,7 @@ end
 function buildWeaponsHeader(suffix, bodyWidth, weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor, orangeColor)
     return {
         tag="HorizontalLayout",
-        attributes={width=tostring(bodyWidth), preferredHeight=weaponsPanelHeight, spacing="0", rectAlignment="UpperLeft"},
+        attributes={width=tostring(bodyWidth), height=tostring(weaponsPanelHeight), spacing="0"},
         children={
             {tag="Panel", attributes={id="weaponsHeaderBlank"..suffix, height=tostring(weaponsPanelHeight)},
                 children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}}},
@@ -218,8 +246,7 @@ function buildWeaponsSeparator(suffix, weaponsSeparatorHeight, orangeColor)
             attributes={
                 id="weaponsHUD_separator"..suffix,
                 flexibleWidth="true",
-                preferredHeight=weaponsSeparatorHeight,
-                rectAlignment="UpperLeft"
+                height=tostring(weaponsSeparatorHeight)
             },
             children={
                 {tag="Image", attributes={color=orangeColor, flexibleWidth="true", height=tostring(weaponsSeparatorHeight)}}
@@ -232,7 +259,7 @@ end
 
 function buildAbilitiesPanel(suffix, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight), rectAlignment="UpperLeft"},
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight)},
         children={
             {tag="Image", attributes={color="#444444DD", flexibleWidth="true", height=tostring(basePanelHeight)}},
             {tag="Text", attributes={id="hudBottomText"..suffix, text="abilities", fontSize="24", color="#FFFFFF", alignment="MiddleCenter"}}
@@ -251,9 +278,8 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
         tag = "HorizontalLayout",
         attributes = {
             width = tostring(bodyWidth),
-            preferredHeight = tostring(weaponsPanelHeight),
-            spacing = tostring(spacing),
-            rectAlignment = "UpperLeft"
+            height = tostring(weaponsPanelHeight),
+            spacing = "0"
         },
         children = {
             -- Icon
