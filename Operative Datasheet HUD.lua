@@ -131,7 +131,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             id="abilitiesPanel"..suffix,
             height=tostring(basePanelHeight),
             flexibleWidth="true",
-            offsetXY="0 "..tostring(bottomOffset),
+            offsetXY="0 "..tostring(bottomOffset-5),
             rectAlignment="UpperLeft"
         },
         children={ buildAbilitiesPanel(suffix, basePanelHeight) }
@@ -295,7 +295,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponName"..suffix, preferredWidth = weaponNameWidth, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                    {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
                 }
             },
             -- ATK
@@ -303,7 +303,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponATK"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- HIT
@@ -311,7 +311,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponHIT"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- DMG
@@ -319,7 +319,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponDMG"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- WR
@@ -327,7 +327,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponWR"..suffix, preferredWidth = weaponRulesWidth, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="20", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                    {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
                 }
             }
         }
