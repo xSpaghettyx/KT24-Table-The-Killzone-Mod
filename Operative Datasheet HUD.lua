@@ -13,11 +13,13 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
     suffix = suffix or "_"..playerColor
 
     local current = UI.getXmlTable({player=playerColor}) or {}
+    local filtered = {}
     for _, node in ipairs(current) do
-        if node.attributes and node.attributes.id == "datasheetHUD_body"..suffix then
-            return
+        if not (node.attributes and node.attributes.id == "datasheetHUD_body"..suffix) then
+            table.insert(filtered, node)
         end
     end
+
     local bodyWidth = 600
     local bodyHeight = 500
     local spacing = 2
@@ -32,13 +34,17 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
     local weaponsSeparatorHeight = 2
     local basePanelHeight = 100
 
-    local xmlNode = buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
-                                      statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
-                                      weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
-                                      weaponsSeparatorHeight, basePanelHeight)
+    local xmlNode = buildDatasheetHUD(
+        suffix, bodyWidth, bodyHeight, spacing,
+        statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
+        weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
+        weaponsSeparatorHeight, basePanelHeight
+    )
 
-    table.insert(current, xmlNode)
-    UI.setXmlTable(current, {player=playerColor})
+    xmlNode.attributes.visibility = playerColor
+
+    table.insert(filtered, xmlNode)
+    UI.setXmlTable(filtered, {player=playerColor})
 end
 
 function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
