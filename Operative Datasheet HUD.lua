@@ -38,7 +38,8 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
         suffix, bodyWidth, bodyHeight, spacing,
         statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
         weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
-        weaponsSeparatorHeight, basePanelHeight
+        weaponsSeparatorHeight, basePanelHeight,
+        weaponCount or 1
     )
 
     xmlNode.attributes.visibility = playerColor
@@ -229,7 +230,7 @@ function buildWeaponsHeader(suffix, bodyWidth, weaponsPanelHeight, weaponNameWid
         attributes={width=tostring(bodyWidth), height=tostring(weaponsPanelHeight), spacing="0"},
         children={
             {tag="Panel", attributes={id="weaponsHeaderBlank"..suffix, height=tostring(weaponsPanelHeight)},
-                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}}},
+                children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Image", attributes={color=weaponBGColor, width="20", height="20", rectAlignment="MiddleCenter"}}}},
             {tag="Panel", attributes={id="weaponsHeaderName"..suffix, preferredWidth=weaponNameWidth, height=tostring(weaponsPanelHeight)},
                 children={{tag="Image", attributes={color=weaponBGColor, flexibleWidth="true", height=tostring(weaponsPanelHeight)}},{tag="Text", attributes={id="weaponsHeaderNameText"..suffix, text="NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}}},
             {tag="Panel", attributes={id="weaponsHeaderATK"..suffix, height=tostring(weaponsPanelHeight)},
@@ -402,6 +403,14 @@ local function extractStat(desc, keyword)
     return value or "?"
 end
 
+local function countWeapons(desc)
+    local count = 0
+    for _ in string.gmatch(desc, "ATK") do
+        count = count + 1
+    end
+    return count
+end
+
 function onOperativeRandomize(params)
     local operative = params[1]
     local playerColor = params[2]
@@ -418,16 +427,18 @@ function onOperativeRandomize(params)
         local save   = extractStat(cleanDesc, "SAVE")
         local wounds = extractStat(cleanDesc, "WOUNDS")
 
-        ensureDatasheetHUD(playerColor)
+        local weaponCount = countWeapons(cleanDesc)
+
+        createDatasheetHUD(playerColor, "_"..playerColor, weaponCount)
 
         updateDatasheetHUD(playerColor, {
-            name     = operativeName,
-            apl      = apl,
-            move     = move,
-            save     = save,
-            wounds   = wounds,
-            weapons  = "weapons",
-            abilities= "abilities"
+            name      = operativeName,
+            apl       = apl,
+            move      = move,
+            save      = save,
+            wounds    = wounds,
+            weapons   = "weapons",
+            abilities = "abilities"
         })
     end
 end
