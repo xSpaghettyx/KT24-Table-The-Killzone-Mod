@@ -413,32 +413,38 @@ end
 
 local function parseWeapons(desc)
     local weapons = {}
+    local inWeaponsSection = false
+
     for line in desc:gmatch("[^\r\n]+") do
-        local weaponType, weaponName = line:match("^%s*([RM])%s+(.+)")
-        if weaponType and weaponName then
-            table.insert(weapons, {
-                type = weaponType,
-                name = weaponName,
-                atk  = "-",
-                hit  = "-",
-                dmg  = "-",
-                wr   = "-"
-            })
-        else
-            local current = weapons[#weapons]
-            if current then
-                local atk = line:match("ATK%s*([%d%+]+)")
-                if atk then current.atk = atk end
+        if line:match("Weapons") then
+            inWeaponsSection = true
+        elseif inWeaponsSection then
+            local weaponType, weaponName = line:match("^%s*([RM])%s+(.+)")
+            if weaponType and weaponName then
+                table.insert(weapons, {
+                    type = weaponType,
+                    name = weaponName,
+                    atk  = "-",
+                    hit  = "-",
+                    dmg  = "-",
+                    wr   = "-"
+                })
+            else
+                local current = weapons[#weapons]
+                if current then
+                    local atk = line:match("ATK%s*([%d%+]+)")
+                    if atk then current.atk = atk end
 
-                local hit = line:match("HIT%s*([%d%+]+%+)")
-                if hit then current.hit = hit end
+                    local hit = line:match("HIT%s*([%d%+]+%+)")
+                    if hit then current.hit = hit end
 
-                local dmg = line:match("DMG%s*([%d/]+)")
-                if dmg then current.dmg = dmg end
+                    local dmg = line:match("DMG%s*([%d/]+)")
+                    if dmg then current.dmg = dmg end
 
-                local wr = line:match("WR%s*:?%s*(.+)")
-                if wr and wr ~= "" then
-                    current.wr = wr
+                    local wr = line:match("WR%s*:?%s*(.+)")
+                    if wr and wr ~= "" then
+                        current.wr = wr
+                    end
                 end
             end
         end
@@ -494,7 +500,7 @@ function onOperativeRandomize(params)
                 safeSetAttribute("weaponDMGText"..suffix, "text", w.dmg, playerColor)
                 safeSetAttribute("weaponWRText"..suffix, "text", w.wr, playerColor)
             end
-        end, 0.1)
+        end, 0.05)
     end
 end
 
