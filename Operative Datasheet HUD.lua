@@ -411,6 +411,42 @@ local function countWeapons(desc)
     return count
 end
 
+local function parseWeapons(desc)
+    local weapons = {}
+    for line in desc:gmatch("[^\r\n]+") do
+        local weaponType, weaponName = line:match("^%s*([RM])%s+(.+)")
+        if weaponType and weaponName then
+            table.insert(weapons, {
+                type = weaponType,
+                name = weaponName,
+                atk  = "-",
+                hit  = "-",
+                dmg  = "-",
+                wr   = "-"
+            })
+        else
+
+            local current = weapons[#weapons]
+            if current then
+                local atk = line:match("ATK%s*([%d%+]+)")
+                if atk then current.atk = atk end
+
+                local hit = line:match("HIT%s*([%d%+]+%+)")
+                if hit then current.hit = hit end
+
+                local dmg = line:match("DMG%s*([%d/]+)")
+                if dmg then current.dmg = dmg end
+
+                local wr = line:match("WR%s*:?%s*(.+)")
+                if wr and wr ~= "" then
+                    current.wr = wr
+                end
+            end
+        end
+    end
+    return weapons
+end
+
 function onOperativeRandomize(params)
     local operative = params[1]
     local playerColor = params[2]
@@ -427,7 +463,8 @@ function onOperativeRandomize(params)
         local save   = extractStat(cleanDesc, "SAVE")
         local wounds = extractStat(cleanDesc, "WOUNDS")
 
-        local weaponCount = countWeapons(cleanDesc)
+        local weapons = parseWeapons(cleanDesc)
+        local weaponCount = #weapons
 
         createDatasheetHUD(playerColor, "_"..playerColor, weaponCount)
 
@@ -440,6 +477,15 @@ function onOperativeRandomize(params)
             weapons   = "weapons",
             abilities = "abilities"
         })
+
+        for i, w in ipairs(weapons) do
+            local suffix = "_"..i
+            safeSetAttribute("weaponNameText"..suffix, "text", w.name, playerColor)
+            safeSetAttribute("weaponATKText"..suffix, "text", w.atk, playerColor)
+            safeSetAttribute("weaponHITText"..suffix, "text", w.hit, playerColor)
+            safeSetAttribute("weaponDMGText"..suffix, "text", w.dmg, playerColor)
+            safeSetAttribute("weaponWRText"..suffix, "text", w.wr, playerColor)
+        end
     end
 end
 
