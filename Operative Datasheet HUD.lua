@@ -21,7 +21,7 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
     end
 
     local bodyWidth = 600
-    local bodyHeight = 500
+    local bodyHeight = 300
     local spacing = 2
     local statsPanelHeight = 50
     local statsNameWidth = 350
@@ -32,7 +32,7 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
     local weaponRulesWidth = 200
     local weaponBGColor = "#CCCCCC"
     local weaponsSeparatorHeight = 2
-    local basePanelHeight = 100
+    local basePanelHeight = 50
 
     local xmlNode = buildDatasheetHUD(
         suffix, bodyWidth, bodyHeight, spacing,
@@ -141,7 +141,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             offsetXY="0 "..tostring(bottomOffset-5),
             rectAlignment="UpperLeft"
         },
-        children={ buildAbilitiesPanel(suffix, basePanelHeight) }
+        children={ buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight) }
     })
 
     return {
@@ -264,12 +264,12 @@ end
 
 -- Build  Abilities Panel
 
-function buildAbilitiesPanel(suffix, basePanelHeight)
+function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flex="1", flexibleWidth="true", height=tostring(basePanelHeight)},
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, width=tostring(bodyWidth), height=tostring(basePanelHeight)},
         children={
-            {tag="Image", attributes={color="#444444DD", flexibleWidth="true", height=tostring(basePanelHeight)}},
-            {tag="Text", attributes={id="hudBottomText"..suffix, text="abilities", fontSize="24", color="#FFFFFF", alignment="MiddleCenter"}}
+            {tag="Image", attributes={color=weaponBGColor, width=tostring(bodyWidth), height=tostring(basePanelHeight)}},
+            {tag="Text", attributes={id="abilitiesText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 0 0"}}
         }
     }
 end
@@ -302,7 +302,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponName"..suffix, preferredWidth = weaponNameWidth, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponNameText"..suffix, text="NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                    {tag="Text", attributes={id="weaponNameText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
                 }
             },
             -- ATK
@@ -310,7 +310,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponATK"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponATKText"..suffix, text="ATK", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponATKText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- HIT
@@ -318,7 +318,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponHIT"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponHITText"..suffix, text="HIT", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponHITText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- DMG
@@ -326,7 +326,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponDMG"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponDMGText"..suffix, text="DMG", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
+                    {tag="Text", attributes={id="weaponDMGText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleCenter"}}
                 }
             },
             -- WR
@@ -334,7 +334,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponWR"..suffix, preferredWidth = weaponRulesWidth, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Text", attributes={id="weaponWRText"..suffix, text="WR", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
+                    {tag="Text", attributes={id="weaponWRText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="MiddleLeft", position="10 0 0"}}
                 }
             }
         }
@@ -355,7 +355,7 @@ function updateDatasheetHUD(playerColor, data)
     safeSetAttribute("statsWoundsValue"..suffix, "text", tostring(data.wounds or "wounds"), playerColor)
 
     safeSetAttribute("hudMiddleText"..suffix, "text", tostring(data.weapons or "weapons"), playerColor)
-    safeSetAttribute("hudBottomText"..suffix, "text", tostring(data.abilities or "abilities"), playerColor)
+    safeSetAttribute("abilitiesText"..suffix, "text", tostring(data.abilities or " "), playerColor)
 end
 
 
@@ -489,7 +489,7 @@ function onOperativeRandomize(params)
                 save      = save,
                 wounds    = wounds,
                 weapons   = "weapons",
-                abilities = "abilities"
+                abilities = " "
             })
 
             for i, w in ipairs(weapons) do
