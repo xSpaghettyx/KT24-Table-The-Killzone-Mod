@@ -9,6 +9,15 @@ function onLoad()
     self.addContextMenuItem("Refresh Datasheet HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
 end
 
+local ICONS = {
+    APL    = "https://steamusercontent-a.akamaihd.net/ugc/9369305430220912809/CC6EC4AAB9725BF7852567DB374B35301735FA62/",
+    WOUNDS = "https://steamusercontent-a.akamaihd.net/ugc/16384741150793604760/CB8B9ED02F9F267F78B2E854E75A871290364190/",
+    SAVE   = "https://steamusercontent-a.akamaihd.net/ugc/13684861407307316890/556F46D8F1A313F5FD3456FFBDD45CA418FD7789/",
+    RANGED = "https://steamusercontent-a.akamaihd.net/ugc/13462888711902053286/AFE9392A03B3E558180E3C2F357BECAACE715DF6/",
+    MOVE   = "https://steamusercontent-a.akamaihd.net/ugc/15432009711221783432/A02CDBA6FEF031FCD18784875D989EF99AD59740/",
+    MELEE  = "https://steamusercontent-a.akamaihd.net/ugc/18196645127188580175/57D0C8FBC2A931C1DB98C8D731C73FC915BF9F20/"
+}
+
 function createDatasheetHUD(playerColor, suffix, weaponCount)
     suffix = suffix or "_"..playerColor
 
@@ -188,8 +197,8 @@ function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, sp
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
                     {tag="Text", attributes={id="statsAPLHeader"..suffix, text="APL", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
+                    {tag="Image", attributes={id="iconAPL"..suffix, image=ICONS.APL, width="20", height="20", position="-10 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsAPLValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="10 -9 0", alignment="MiddleCenter"}}
                 }
             },
             {
@@ -197,7 +206,7 @@ function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, sp
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
                     {tag="Text", attributes={id="statsMoveHeader"..suffix, text="MOVE", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Image", attributes={id="iconMOVE"..suffix, image=ICONS.MOVE, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
                     {tag="Text", attributes={id="statsMoveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             },
@@ -206,7 +215,7 @@ function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, sp
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
                     {tag="Text", attributes={id="statsSaveHeader"..suffix, text="SAVE", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
+                    {tag="Image", attributes={id="iconSAVE"..suffix, image=ICONS.SAVE, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
                     {tag="Text", attributes={id="statsSaveValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
                 }
             },
@@ -215,8 +224,8 @@ function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, sp
                 children={
                     {tag="Image", attributes={color=statsBGColor, height=tostring(statsPanelHeight)}},
                     {tag="Text", attributes={id="statsWoundsHeader"..suffix, text="WOUNDS", fontSize="10", fontStyle="Bold", color="#FFFFFF", alignment="MiddleCenter", position="0 13 0"}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", position="-12 -9 0", alignment="MiddleCenter"}},
-                    {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="12 -9 0", alignment="MiddleCenter"}}
+                    {tag="Image", attributes={id="iconWOUNDS"..suffix, image=ICONS.WOUNDS, width="20", height="20", position="-10 -9 0", alignment="MiddleCenter"}},
+                    {tag="Text", attributes={id="statsWoundsValue"..suffix, text="0", fontSize="20", fontStyle="Bold", color="#FFFFFF", position="7 -9 0", alignment="MiddleCenter"}}
                 }
             }
         }
@@ -269,7 +278,7 @@ function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
         tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, width=tostring(bodyWidth), height=tostring(basePanelHeight)},
         children={
             {tag="Image", attributes={color=weaponBGColor, width=tostring(bodyWidth), height=tostring(basePanelHeight)}},
-            {tag="Text", attributes={id="abilitiesText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 0 0"}}
+            {tag="Text", attributes={id="abilitiesText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -10 0"}}
         }
     }
 end
@@ -294,7 +303,7 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
                 tag = "Panel", attributes = {id = "weaponIcon"..suffix, height = tostring(weaponsPanelHeight)},
                 children = {
                     {tag="Image", attributes={color=weaponBGColor, height=tostring(weaponsPanelHeight)}},
-                    {tag="Image", attributes={color=orangeColor, width="20", height="20", rectAlignment="MiddleCenter"}}
+                    {tag="Image", attributes={id = "weaponTypeIcon"..suffix, image=ICONS.RANGED, width="30", height="30", rectAlignment="MiddleCenter"}}
                 }
             },
             -- Name
@@ -499,7 +508,11 @@ function onOperativeRandomize(params)
                 safeSetAttribute("weaponHITText"..suffix, "text", w.hit, playerColor)
                 safeSetAttribute("weaponDMGText"..suffix, "text", w.dmg, playerColor)
                 safeSetAttribute("weaponWRText"..suffix, "text", w.wr, playerColor)
+
+                local iconUrl = (w.type == "R") and ICONS.RANGED or ICONS.MELEE
+                safeSetAttribute("weaponTypeIcon"..suffix, "image", iconUrl, playerColor)
             end
+
         end, 0.05)
     end
 end
