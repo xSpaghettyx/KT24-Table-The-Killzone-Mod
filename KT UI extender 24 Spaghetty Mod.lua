@@ -728,6 +728,27 @@ end
 
 function onLoad(ls)
   loadState()
+
+  if not state.stats then
+    state.stats = {}
+  end
+
+  if state.stats.Wounds == nil and state.stats.W then
+      state.stats.Wounds = tonumber(state.stats.W) or 0
+  end
+  if state.stats.Move == nil and state.stats.M then
+      state.stats.Move = tonumber(state.stats.M) or 0
+  end
+  if state.stats.Save == nil and state.stats.SV then
+      state.stats.Save = tonumber(state.stats.SV) or 0
+  end
+
+  if state.wounds == nil then
+      state.wounds = state.stats.Wounds or 0
+  elseif state.wounds > (state.stats.Wounds or 0) then
+      state.wounds = state.stats.Wounds or 0
+  end
+
   state.display_arrows = false
   if state.attachments == nil then
     state.attachments = {}
