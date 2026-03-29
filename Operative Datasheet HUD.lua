@@ -1,10 +1,5 @@
 function onLoad()
     local targetColors = {"Red", "Blue", "Yellow", "Teal", "Black"}
-    for _, color in ipairs(targetColors) do
-        if Player[color].seated then
-            createDatasheetHUD(color)
-        end
-    end
     self.addContextMenuItem("Delete Datasheet HUD", function(playerColor) deleteDatasheetHUD(playerColor) end)
     self.addContextMenuItem("Refresh Datasheet HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
 end
@@ -120,7 +115,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
                 rectAlignment="UpperLeft"
             },
             children={ buildWeaponInfoRow(i, bodyWidth, weaponsPanelHeight, spacing,
-                                          weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth) }
+                                        weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth, suffix) }
         })
     end
 
@@ -153,6 +148,19 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         children={ buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight) }
     })
 
+    --Close Button
+    table.insert(children, {
+        tag = "Panel",
+        attributes = {
+            id = "closeButtonPanel" .. suffix,
+            height = "80",
+            width = "80",
+            offsetXY = "-80 60",
+            rectAlignment = "UpperLeft"
+        },
+        children = { buildCloseButton(suffix) }
+    })
+
     return {
         tag="Panel",
         attributes={
@@ -177,6 +185,8 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         }
     }
 end
+
+-- ====================
 
 -- Build Stats Panel
 function buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor)
@@ -286,9 +296,9 @@ end
 -- Weapon Info Module
 
 function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
-                            weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth)
+                            weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth, parentSuffix)
 
-    local suffix = "_"..tostring(idWeapon)
+    local suffix = "_"..tostring(idWeapon)..parentSuffix
 
     return {
         tag = "HorizontalLayout",
@@ -350,6 +360,22 @@ function buildWeaponInfoRow(idWeapon, bodyWidth, weaponsPanelHeight, spacing,
     }
 end
 
+--Build Close Button
+function buildCloseButton(suffix)
+    return {
+        tag = "Button",
+        attributes = {
+            id = "closeButton" .. suffix,
+            onClick = "deleteDatasheetHUD",
+            text = "Close",
+            width = "60",
+            height = "25",
+            textColor = "Red",
+            colors = "#000000|#222222|#444444"
+        }
+    }
+end
+
 local function safeSetAttribute(id, attr, value, playerColor)
     UI.setAttribute(id, attr, value, {player=playerColor})
 end
@@ -368,17 +394,21 @@ function updateDatasheetHUD(playerColor, data)
 end
 
 
-function deleteDatasheetHUD(playerColor)
-    local suffix = "_"..playerColor
-    local current = UI.getXmlTable({player=playerColor})
+function deleteDatasheetHUD(player, value)
+    print("deleteDatasheetHUD called by", player, "button:", value) -- debug
+
+    local suffix = "_" .. player
+    local current = UI.getXmlTable({player=player})
     if current == nil then return end
+
     local filtered = {}
     for _, node in ipairs(current) do
-        if node.attributes == nil or node.attributes.id ~= "datasheetHUD_body"..suffix then
+        if node.attributes == nil or node.attributes.id ~= "datasheetHUD_body" .. suffix then
             table.insert(filtered, node)
         end
     end
-    UI.setXmlTable(filtered, {player=playerColor})
+
+    UI.setXmlTable(filtered, {player=player})
 end
 
 function refreshDatasheetHUDAll()
@@ -502,7 +532,7 @@ function onOperativeRandomize(params)
             })
 
             for i, w in ipairs(weapons) do
-                local suffix = "_"..i
+                local suffix = "_"..i.."_"..playerColor
                 safeSetAttribute("weaponNameText"..suffix, "text", w.name, playerColor)
                 safeSetAttribute("weaponATKText"..suffix, "text", w.atk, playerColor)
                 safeSetAttribute("weaponHITText"..suffix, "text", w.hit, playerColor)
