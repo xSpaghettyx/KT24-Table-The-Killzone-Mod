@@ -153,9 +153,9 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         tag = "Panel",
         attributes = {
             id = "closeButtonPanel" .. suffix,
-            height = "80",
-            width = "80",
-            offsetXY = "-80 60",
+            height = "25",
+            width = "25",
+            offsetXY = "-25 0",
             rectAlignment = "UpperLeft"
         },
         children = { buildCloseButton(suffix) }
@@ -168,9 +168,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             width=tostring(bodyWidth),
             height=tostring(bodyHeight),
             rectAlignment="MiddleRight",
-            spacing=tostring(spacing),
-            allowDragging="true",
-            returnToOriginalPositionWhenReleased="false"
+            spacing=tostring(spacing)
         },
         children={
             {
@@ -366,12 +364,12 @@ function buildCloseButton(suffix)
         tag = "Button",
         attributes = {
             id = "closeButton" .. suffix,
-            onClick = "deleteDatasheetHUD",
-            text = "Close",
-            width = "60",
+            onClick = self.getGUID() .. "/closePlayerDatasheetHUD",
+            text = "X",
+            width = "25",
             height = "25",
             textColor = "Red",
-            colors = "#000000|#222222|#444444"
+            colors = "#222222|#303030|#444444"
         }
     }
 end
@@ -395,8 +393,6 @@ end
 
 
 function deleteDatasheetHUD(player, value)
-    print("deleteDatasheetHUD called by", player, "button:", value) -- debug
-
     local suffix = "_" .. player
     local current = UI.getXmlTable({player=player})
     if current == nil then return end
@@ -409,6 +405,24 @@ function deleteDatasheetHUD(player, value)
     end
 
     UI.setXmlTable(filtered, {player=player})
+end
+
+function closePlayerDatasheetHUD(player, value, id)
+
+    local suffix = id:match("^closeButton(.+)$")
+    if not suffix then return end
+
+    local targetId = "datasheetHUD_body" .. suffix
+
+    local xml = UI.getXmlTable(player.color)
+    local filtered = {}
+    for _, element in ipairs(xml) do
+        if element.attributes.id ~= targetId then
+            table.insert(filtered, element)
+        end
+    end
+
+    UI.setXmlTable(filtered, player.color)
 end
 
 function refreshDatasheetHUDAll()
