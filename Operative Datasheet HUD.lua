@@ -1,3 +1,5 @@
+-- Kill Team 24 Operative Datasheet HUD by Spaghetty
+
 function onLoad()
     local targetColors = {"Red", "Blue", "Yellow", "Teal", "Black"}
     self.addContextMenuItem("Delete Datasheet HUD", function(playerColor) deleteDatasheetHUD(playerColor) end)
