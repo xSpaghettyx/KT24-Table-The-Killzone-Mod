@@ -517,30 +517,32 @@ local function parseWeapons(desc)
 end
 
 function onOperativeRandomize(params)
-    local operative = params[1]
+    local operative   = params[1]
     local playerColor = params[2]
 
     if operative and operative.hasTag("Operative") then
-        local rawName = operative.getName()
+        local rawName       = operative.getName()
         local operativeName = extractOperativeName(rawName)
 
-        local desc = operative.getDescription()
-        local cleanDesc = cleanDescription(desc)
+        local objState = operative.getTable('state') or {}
+        local stats    = objState.stats or {}
 
-        local apl    = extractStat(cleanDesc, "APL")
-        local move   = extractStat(cleanDesc, "MOVE")
-        local save   = extractStat(cleanDesc, "SAVE")
-        local wounds = extractStat(cleanDesc, "WOUNDS")
+        local apl    = stats.APL or ""
+        local move   = (stats.Move or "") .. '"'
+        local save   = stats.Save or ""
+        local wounds = stats.Wounds or ""
 
-        local weapons = parseWeapons(cleanDesc)
+        local desc        = operative.getDescription()
+        local cleanDesc   = cleanDescription(desc)
+        local weapons     = parseWeapons(cleanDesc)
         local weaponCount = #weapons
 
         WeaponCache[playerColor] = {
             operative = operativeName,
             stats = {
-                apl = apl,
-                move = move,
-                save = save,
+                apl    = apl,
+                move   = move,
+                save   = save,
                 wounds = wounds
             },
             weapons = weapons
