@@ -568,22 +568,42 @@ function onOperativeRandomize(params)
                 local iconUrl = (w.type == "R") and ICONS.RANGED or ICONS.MELEE
                 safeSetAttribute("weaponTypeIcon"..suffix, "image", iconUrl, playerColor)
             end
-
         end, 0.05)
     end
 end
 
 function onWeaponAttack(player, value, id)
-    local index, color = id:match("weaponButton_(%d+)_(%a+)")
+    local index, hudColor = id:match("weaponButton_(%d+)_(%a+)")
     index = tonumber(index)
 
-    local cache = WeaponCache[color]
-    if cache and cache.weapons[index] then
-        local w = cache.weapons[index]
-        print("Attacking with "..w.name..", "..w.atk.." attacks")
-    else
-        print("No weapon cached for "..id)
+    local cache = WeaponCache[hudColor]
+    if not cache or not cache.weapons[index] then return end
+
+    local w = cache.weapons[index]
+    local operativeName = cache.operative or "UNKNOWN OPERATIVE"
+
+    local msg = operativeName.." attacks using "..w.name..", "..w.atk.." attacks"
+    player.broadcast(msg)
+
+    local roller
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.hasTag("KTUIDiceRoller") then
+            roller = obj
+            break
+        end
     end
+    if not roller then return end
+
+    local weaponAttacks = tonumber(w.atk) or 0
+
+    Wait.frames(function()
+        player.clearSelectedObjects()
+        if value == "-1" then
+            roller.call("askSpawn", { player = player, number = weaponAttacks, auto = 0 })
+        elseif value == "-2" then
+            roller.call("askSpawn", { player = player, number = weaponAttacks, auto = 1 })
+        end
+    end, 5)
 end
 
 function extractOperativeName(rawName)
