@@ -59,10 +59,9 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
                            weaponCount)
 
     weaponCount = weaponCount or 5
-
     local children = {}
 
-    -- Stats Panel (offset 0)
+    -- Stats Panel
     table.insert(children, {
         tag="Panel",
         attributes={
@@ -75,7 +74,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         children={ buildStatsPanel(suffix, bodyWidth, statsPanelHeight, statsNameWidth, spacing, statsBGColor, orangeColor) }
     })
 
-    -- Weapons Header (offset = statsPanelHeight + spacing)
+    -- Weapons Header
     table.insert(children, {
         tag="Panel",
         attributes={
@@ -101,27 +100,28 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         children=buildWeaponsSeparator(suffix.."_top", weaponsSeparatorHeight, orangeColor)
     })
 
-    -- Weapon Info Panels
+    -- Weapon Buttons
     for i=1,weaponCount do
         local yOffset = -(90 + weaponsPanelHeight * (i - 1))
+        local buttonId = "weaponButton_"..i..suffix
 
         table.insert(children, {
-            tag="Panel",
+            tag="Button",
             attributes={
-                id="weaponRow"..i..suffix,
+                id=buttonId,
                 height=tostring(weaponsPanelHeight),
                 flexibleWidth="true",
                 offsetXY = "0 "..tostring(yOffset),
-                rectAlignment="UpperLeft"
+                rectAlignment="UpperLeft",
+                onClick=self.getGUID().."/onWeaponAttack"
             },
             children={ buildWeaponInfoRow(i, bodyWidth, weaponsPanelHeight, spacing,
-                                        weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth, suffix) }
+                                          weaponBGColor, orangeColor, weaponNameWidth, weaponRulesWidth, suffix) }
         })
     end
 
     -- Bottom Separator
     local bottomOffset = -(90 + weaponsPanelHeight * weaponCount)
-
     table.insert(children, {
         tag="Panel",
         attributes={
@@ -135,7 +135,6 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
     })
 
     -- Abilities Panel
-    local abilitiesOffset = bottomOffset
     table.insert(children, {
         tag="Panel",
         attributes={
@@ -148,7 +147,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         children={ buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight) }
     })
 
-    --Close Button
+    -- Close Button
     table.insert(children, {
         tag = "Panel",
         attributes = {
@@ -464,6 +463,8 @@ local function countWeapons(desc)
     return count
 end
 
+WeaponCache = {}
+
 local function parseWeapons(desc)
     local weapons = {}
     local inWeaponsSection = false
@@ -532,6 +533,17 @@ function onOperativeRandomize(params)
         local weapons = parseWeapons(cleanDesc)
         local weaponCount = #weapons
 
+        WeaponCache[playerColor] = {
+            operative = operativeName,
+            stats = {
+                apl = apl,
+                move = move,
+                save = save,
+                wounds = wounds
+            },
+            weapons = weapons
+        }
+
         createDatasheetHUD(playerColor, "_"..playerColor, weaponCount)
 
         Wait.time(function()
@@ -558,6 +570,19 @@ function onOperativeRandomize(params)
             end
 
         end, 0.05)
+    end
+end
+
+function onWeaponAttack(player, value, id)
+    local index, color = id:match("weaponButton_(%d+)_(%a+)")
+    index = tonumber(index)
+
+    local cache = WeaponCache[color]
+    if cache and cache.weapons[index] then
+        local w = cache.weapons[index]
+        print("Attacking with "..w.name..", "..w.atk.." attacks")
+    else
+        print("No weapon cached for "..id)
     end
 end
 
