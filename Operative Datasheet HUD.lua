@@ -586,8 +586,9 @@ function onWeaponAttack(player, value, id)
     local w = cache.weapons[index]
     local operativeName = cache.operative or "UNKNOWN OPERATIVE"
 
-    local msg = operativeName.." attacks using "..w.name..", "..w.atk.." attacks"
-    player.broadcast(msg)
+    local msg = operativeName .. " attacks using " .. w.name .. ", " .. w.atk .. " attacks"
+
+    Player[player.color].broadcast(msg, player.color)
 
     local roller
     for _, obj in ipairs(getAllObjects()) do
