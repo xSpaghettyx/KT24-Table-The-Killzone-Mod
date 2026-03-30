@@ -136,17 +136,24 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
         children=buildWeaponsSeparator(suffix.."_bottom", weaponsSeparatorHeight, orangeColor)
     })
 
-    -- Abilities Panel
+    -- Abilities and Actions Grid
     table.insert(children, {
-        tag="Panel",
-        attributes={
-            id="abilitiesPanel"..suffix,
-            height=tostring(basePanelHeight),
-            flexibleWidth="true",
-            offsetXY="0 "..tostring(bottomOffset-5),
-            rectAlignment="UpperLeft"
+        tag = "GridLayout",
+        attributes = {
+            id = "abilitiesAndActionsMain"..suffix,
+            cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*2),
+            spacing = "2 2",
+            rectAlignment = "UpperLeft",
+            offsetXY = "0 "..tostring(bottomOffset-5),
+            flexibleWidth = "true",
+            height = 300
         },
-        children={ buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight) }
+        children = {
+            buildAbilitiesPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
+            buildAbilitiesPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
+            buildActionsPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
+            buildActionsPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight)
+        }
     })
 
     -- Close Button
@@ -280,14 +287,30 @@ function buildWeaponsSeparator(suffix, weaponsSeparatorHeight, orangeColor)
     }
 end
 
--- Build  Abilities Panel
+-- Build  Ability Panel
 
 function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, width=tostring(bodyWidth), height=tostring(basePanelHeight)},
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height="100"},
         children={
-            {tag="Image", attributes={color=weaponBGColor, width=tostring(bodyWidth), height=tostring(basePanelHeight)}},
-            {tag="Text", attributes={id="abilitiesText"..suffix, text=" ", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -10 0"}}
+            {tag="Image", attributes={color=weaponBGColor, height="100", rectAlignment="UpperLeft"}},
+            {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -10 0"}},
+            {tag="Text", attributes={id="abilityDescriptionText"..suffix, text="ability description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -30 0"}},
+        }
+    }
+end
+
+-- Build  Action Panel
+
+function buildActionsPanel(suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight)
+    return {
+        tag="Panel", attributes={id="datasheetHUD_actions"..suffix, flexibleWidth="true", height=tostring"100"},
+        children={
+            {tag="Image", attributes={color=weaponBGColor, height="100", rectAlignment="UpperLeft"}},
+            {tag="Image", attributes={color=orangeColor, height="25", rectAlignment="UpperLeft"}},
+            {tag="Text", attributes={id="actionNameText"..suffix, text="ACTION NAME", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperLeft", position="10 -7 0"}},
+            {tag="Text", attributes={id="actionAPCostText"..suffix, text="1AP", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperRight", position="-10 -7 0"}},
+            {tag="Text", attributes={id="actionDescriptionText"..suffix, text="action description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -30 0"}},
         }
     }
 end
