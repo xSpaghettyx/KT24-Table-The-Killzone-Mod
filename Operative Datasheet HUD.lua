@@ -15,7 +15,7 @@ local ICONS = {
     MELEE  = "https://steamusercontent-a.akamaihd.net/ugc/18196645127188580175/57D0C8FBC2A931C1DB98C8D731C73FC915BF9F20/"
 }
 
-function createDatasheetHUD(playerColor, suffix, weaponCount)
+function createDatasheetHUD(playerColor, suffix, weaponCount, abilityCount, actionCount)
     suffix = suffix or "_"..playerColor
 
     local current = UI.getXmlTable({player=playerColor}) or {}
@@ -45,7 +45,7 @@ function createDatasheetHUD(playerColor, suffix, weaponCount)
         statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
         weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
         weaponsSeparatorHeight, basePanelHeight,
-        weaponCount or 1
+        weaponCount or 1, abilityCount, actionCount
     )
 
     xmlNode.attributes.visibility = playerColor
@@ -58,7 +58,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
                            statsPanelHeight, statsNameWidth, statsBGColor, orangeColor,
                            weaponsPanelHeight, weaponNameWidth, weaponRulesWidth, weaponBGColor,
                            weaponsSeparatorHeight, basePanelHeight,
-                           weaponCount)
+                           weaponCount, abilityCount, actionCount)
 
     weaponCount = weaponCount or 5
     local children = {}
@@ -137,24 +137,38 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
     })
 
     -- Abilities and Actions Grid
-    table.insert(children, {
-        tag = "GridLayout",
-        attributes = {
-            id = "abilitiesAndActionsMain"..suffix,
-            cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*2),
-            spacing = "2 2",
-            rectAlignment = "UpperLeft",
-            offsetXY = "0 "..tostring(bottomOffset-5),
-            flexibleWidth = "true",
-            height = 300
-        },
-        children = {
-            buildAbilitiesPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
-            buildAbilitiesPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
-            buildActionsPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight),
-            buildActionsPanel(suffix, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight)
+    local function buildAbilitiesAndActionsGrid(suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight, bottomOffset, abilityCount, actionCount)
+        local children = {}
+
+        for i = 1, abilityCount do
+            local suffixId = "_"..i..suffix
+            table.insert(children, buildAbilitiesPanel(suffixId, bodyWidth/2, weaponBGColor, basePanelHeight))
+        end
+
+        for i = 1, actionCount do
+            local suffixId = "_"..i..suffix
+            table.insert(children, buildActionsPanel(suffixId, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight))
+        end
+
+        return {
+            tag = "GridLayout",
+            attributes = {
+                id = "abilitiesAndActionsMain"..suffix,
+                cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*2),
+                spacing = "2 2",
+                rectAlignment = "UpperLeft",
+                offsetXY = "0 "..tostring(bottomOffset-5),
+                flexibleWidth = "true",
+                height = tostring((abilityCount + actionCount) * basePanelHeight * 2)
+            },
+            children = children
         }
-    })
+    end
+
+    table.insert(children, buildAbilitiesAndActionsGrid(
+        suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight, bottomOffset,
+        abilityCount, actionCount
+    ))
 
     -- Close Button
     table.insert(children, {
@@ -539,6 +553,61 @@ local function parseWeapons(desc)
     return weapons
 end
 
+AbilityActionCache = {}
+
+local function parseAbilitiesAndActionsFromState(operative, playerColor)
+    local objState = operative.getTable('state') or {}
+    local info = objState.info or {}
+    local abilities, actions = {}, {}
+
+    if info.abilities then
+        for i, a in ipairs(info.abilities) do
+            table.insert(abilities, {
+                name = a.name or ("Ability "..i),
+                description = a.text or "",
+                abilityActionDescriptionPresent = (a.text and a.text ~= "")
+            })
+        end
+    end
+
+    if info.actions then
+        for i, act in ipairs(info.actions) do
+            local rawName = act.name or ("Action "..i)
+            local cleanName, apCost = rawName:match("^(.-)%s*%((%d+AP)%)$")
+            if not cleanName then cleanName, apCost = rawName, "" end
+
+            table.insert(actions, {
+                name = cleanName,
+                apCost = apCost,
+                description = act.text or "",
+                abilityActionDescriptionPresent = (act.text and act.text ~= "")
+            })
+        end
+    end
+
+    AbilityActionCache[playerColor] = {
+        abilities = abilities,
+        actions   = actions,
+        abilityCount = #abilities,
+        actionCount  = #actions
+    }
+
+    for i, a in ipairs(abilities) do
+        local suffix = "_"..i.."_"..playerColor
+        safeSetAttribute("abilityNameText"..suffix, "text", a.name, playerColor)
+        safeSetAttribute("abilityDescriptionText"..suffix, "text", a.description, playerColor)
+    end
+
+    for i, act in ipairs(actions) do
+        local suffix = "_"..i.."_"..playerColor
+        safeSetAttribute("actionNameText"..suffix, "text", act.name, playerColor)
+        safeSetAttribute("actionAPCostText"..suffix, "text", act.apCost, playerColor)
+        safeSetAttribute("actionDescriptionText"..suffix, "text", act.description, playerColor)
+    end
+
+    return AbilityActionCache[playerColor]
+end
+
 function onOperativeRandomize(params)
     local operative   = params[1]
     local playerColor = params[2]
@@ -557,8 +626,13 @@ function onOperativeRandomize(params)
 
         local desc        = operative.getDescription()
         local cleanDesc   = cleanDescription(desc)
+
         local weapons     = parseWeapons(cleanDesc)
         local weaponCount = #weapons
+
+        local abilityActionData = parseAbilitiesAndActionsFromState(operative, playerColor)
+        local abilityCount = abilityActionData.abilityCount
+        local actionCount  = abilityActionData.actionCount
 
         WeaponCache[playerColor] = {
             operative = operativeName,
@@ -571,7 +645,7 @@ function onOperativeRandomize(params)
             weapons = weapons
         }
 
-        createDatasheetHUD(playerColor, "_"..playerColor, weaponCount)
+        createDatasheetHUD(playerColor, "_"..playerColor, weaponCount, abilityCount, actionCount)
 
         Wait.time(function()
             updateDatasheetHUD(playerColor, {
@@ -581,7 +655,7 @@ function onOperativeRandomize(params)
                 save      = save,
                 wounds    = wounds,
                 weapons   = "weapons",
-                abilities = " "
+                abilities = "abilities/actions"
             })
 
             for i, w in ipairs(weapons) do
@@ -594,6 +668,19 @@ function onOperativeRandomize(params)
 
                 local iconUrl = (w.type == "R") and ICONS.RANGED or ICONS.MELEE
                 safeSetAttribute("weaponTypeIcon"..suffix, "image", iconUrl, playerColor)
+            end
+
+            for i, a in ipairs(abilityActionData.abilities) do
+                local suffix = "_"..i.."_"..playerColor
+                safeSetAttribute("abilityNameText"..suffix, "text", a.name, playerColor)
+                safeSetAttribute("abilityDescriptionText"..suffix, "text", a.description, playerColor)
+            end
+
+            for i, act in ipairs(abilityActionData.actions) do
+                local suffix = "_"..i.."_"..playerColor
+                safeSetAttribute("actionNameText"..suffix, "text", act.name, playerColor)
+                safeSetAttribute("actionAPCostText"..suffix, "text", act.apCost, playerColor)
+                safeSetAttribute("actionDescriptionText"..suffix, "text", act.description, playerColor)
             end
         end, 0.05)
     end
