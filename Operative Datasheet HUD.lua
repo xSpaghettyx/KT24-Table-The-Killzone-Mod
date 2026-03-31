@@ -154,12 +154,12 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             tag = "GridLayout",
             attributes = {
                 id = "abilitiesAndActionsMain"..suffix,
-                cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*2),
+                cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*4),
                 spacing = "2 2",
                 rectAlignment = "UpperLeft",
                 offsetXY = "0 "..tostring(bottomOffset-5),
                 flexibleWidth = "true",
-                height = tostring((abilityCount + actionCount) * basePanelHeight * 2)
+                height = tostring((abilityCount + actionCount) * basePanelHeight * 4)
             },
             children = children
         }
@@ -305,11 +305,25 @@ end
 
 function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height="100"},
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*4)},
         children={
-            {tag="Image", attributes={color=weaponBGColor, height="100", rectAlignment="UpperLeft"}},
-            {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -10 0"}},
-            {tag="Text", attributes={id="abilityDescriptionText"..suffix, text="ability description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -30 0"}},
+            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*4), rectAlignment="UpperLeft"}},
+            {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="17", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="8 -3 0"}},
+            {
+                tag="Panel", attributes={position="8 -30 0"},
+                children={
+                    {tag="VerticalScrollView", attributes={
+                        id="abilityScroll"..suffix,
+                        height="150", 
+                        width="290",
+                        rectAlignment="UpperLeft",
+                        showScrollbar="true",
+                        padding="4 4 4 4"
+                    }, children={
+                        {tag="Text", attributes={id="abilityDescriptionText"..suffix, text="ability description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft"}}
+                    }}
+                }
+            }
         }
     }
 end
@@ -318,13 +332,27 @@ end
 
 function buildActionsPanel(suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_actions"..suffix, flexibleWidth="true", height=tostring"100"},
+        tag="Panel", attributes={id="datasheetHUD_actions"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*4)},
         children={
-            {tag="Image", attributes={color=weaponBGColor, height="100", rectAlignment="UpperLeft"}},
+            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*4), rectAlignment="UpperLeft"}},
             {tag="Image", attributes={color=orangeColor, height="25", rectAlignment="UpperLeft"}},
-            {tag="Text", attributes={id="actionNameText"..suffix, text="ACTION NAME", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperLeft", position="10 -7 0"}},
+            {tag="Text", attributes={id="actionNameText"..suffix, text="ACTION NAME", fontSize="17", fontStyle="Bold", color="#ffffff", alignment="UpperLeft", position="10 -2 0"}},
             {tag="Text", attributes={id="actionAPCostText"..suffix, text="1AP", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperRight", position="-10 -7 0"}},
-            {tag="Text", attributes={id="actionDescriptionText"..suffix, text="action description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="10 -30 0"}},
+            {
+                tag="Panel", attributes={position="8 -30 0", mask="true"},
+                children={
+                    {tag="VerticalScrollView", attributes={
+                        id="actionScroll"..suffix,
+                        height="150", 
+                        width="290",
+                        rectAlignment="UpperLeft",
+                        showScrollbar="true",
+                        padding="4 4 4 4"
+                    }, children={
+                        {tag="Text", attributes={id="actionDescriptionText"..suffix, text="action description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft"}}
+                    }}
+                }
+            }
         }
     }
 end
