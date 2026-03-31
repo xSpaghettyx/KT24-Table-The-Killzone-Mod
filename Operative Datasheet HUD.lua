@@ -2,8 +2,8 @@
 
 function onLoad()
     local targetColors = {"Red", "Blue", "Yellow", "Teal", "Black"}
-    self.addContextMenuItem("Delete Datasheet HUD", function(playerColor) deleteDatasheetHUD(playerColor) end)
-    self.addContextMenuItem("Refresh Datasheet HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
+    self.addContextMenuItem("Delete HUD", function(playerColor) deleteDatasheetHUD(playerColor) end)
+    self.addContextMenuItem("Refresh HUD", function(playerColor) refreshDatasheetHUD(playerColor) end)
 end
 
 local ICONS = {
@@ -684,7 +684,7 @@ function onOperativeRandomize(params)
 
         local apl    = stats.APL or ""
         local move   = (stats.Move or "") .. '"'
-        local save   = stats.Save or ""
+        local save   = (stats.Save or "") .. '+'
         local wounds = stats.Wounds or ""
 
         local desc        = operative.getDescription()
