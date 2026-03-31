@@ -139,6 +139,7 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
     -- Abilities and Actions Grid
     local function buildAbilitiesAndActionsGrid(suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight, bottomOffset, abilityCount, actionCount)
         local children = {}
+        local totalCount = abilityCount + actionCount
 
         for i = 1, abilityCount do
             local suffixId = "_"..i..suffix
@@ -150,16 +151,41 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             table.insert(children, buildActionsPanel(suffixId, bodyWidth/2, weaponBGColor, orangeColor, basePanelHeight))
         end
 
+        if totalCount % 2 == 1 then
+            local lastChild = children[#children]
+
+            if lastChild.tag == "Panel" then
+
+                lastChild.attributes.flexibleWidth = "true"
+                lastChild.attributes.width = tostring(bodyWidth - 2)
+
+                for _, child in ipairs(lastChild.children) do
+
+                    if child.tag == "Image" and child.attributes.color == weaponBGColor then
+                        child.attributes.width = tostring(bodyWidth - 2)
+                    end
+
+                    if child.tag == "Panel" then
+                        for _, sub in ipairs(child.children) do
+                            if sub.tag == "VerticalScrollView" then
+                                sub.attributes.width = "590"
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
         return {
             tag = "GridLayout",
             attributes = {
                 id = "abilitiesAndActionsMain"..suffix,
-                cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*4),
+                cellSize = tostring(bodyWidth/2-2).." "..tostring(basePanelHeight*3),
                 spacing = "2 2",
                 rectAlignment = "UpperLeft",
                 offsetXY = "0 "..tostring(bottomOffset-5),
                 flexibleWidth = "true",
-                height = tostring((abilityCount + actionCount) * basePanelHeight * 4)
+                height = tostring(totalCount * basePanelHeight * 3)
             },
             children = children
         }
@@ -305,20 +331,19 @@ end
 
 function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*4)},
+        tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*3)},
         children={
-            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*4), rectAlignment="UpperLeft"}},
+            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*3), rectAlignment="UpperLeft"}},
             {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="17", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="8 -3 0"}},
             {
                 tag="Panel", attributes={position="8 -30 0"},
                 children={
                     {tag="VerticalScrollView", attributes={
                         id="abilityScroll"..suffix,
-                        height="150", 
+                        height="120", 
                         width="290",
                         rectAlignment="UpperLeft",
                         showScrollbar="true",
-                        padding="4 4 4 4"
                     }, children={
                         {tag="Text", attributes={id="abilityDescriptionText"..suffix, text="ability description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft"}}
                     }}
@@ -332,9 +357,9 @@ end
 
 function buildActionsPanel(suffix, bodyWidth, weaponBGColor, orangeColor, basePanelHeight)
     return {
-        tag="Panel", attributes={id="datasheetHUD_actions"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*4)},
+        tag="Panel", attributes={id="datasheetHUD_actions"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*3)},
         children={
-            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*4), rectAlignment="UpperLeft"}},
+            {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*3), rectAlignment="UpperLeft"}},
             {tag="Image", attributes={color=orangeColor, height="25", rectAlignment="UpperLeft"}},
             {tag="Text", attributes={id="actionNameText"..suffix, text="ACTION NAME", fontSize="17", fontStyle="Bold", color="#ffffff", alignment="UpperLeft", position="10 -2 0"}},
             {tag="Text", attributes={id="actionAPCostText"..suffix, text="1AP", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperRight", position="-10 -7 0"}},
@@ -343,11 +368,10 @@ function buildActionsPanel(suffix, bodyWidth, weaponBGColor, orangeColor, basePa
                 children={
                     {tag="VerticalScrollView", attributes={
                         id="actionScroll"..suffix,
-                        height="150", 
+                        height="120", 
                         width="290",
                         rectAlignment="UpperLeft",
-                        showScrollbar="true",
-                        padding="4 4 4 4"
+                        showScrollbar="true"
                     }, children={
                         {tag="Text", attributes={id="actionDescriptionText"..suffix, text="action description", fontSize="15", fontStyle="Bold", color="#000000", alignment="UpperLeft"}}
                     }}
