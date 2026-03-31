@@ -340,7 +340,7 @@ function buildAbilitiesPanel(suffix, bodyWidth, weaponBGColor, basePanelHeight)
         tag="Panel", attributes={id="datasheetHUD_abilities"..suffix, flexibleWidth="true", height=tostring(basePanelHeight*3)},
         children={
             {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*3), rectAlignment="UpperLeft"}},
-            {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="17", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="8 -3 0"}},
+            {tag="Text", attributes={id="abilityNameText"..suffix, text="ABILITY NAME", fontSize="17", fontStyle="Bold", color="#000000", alignment="UpperLeft", position="8 -5 0"}},
             {
                 tag="Panel", attributes={position="8 -30 0"},
                 children={
@@ -368,7 +368,7 @@ function buildActionsPanel(suffix, bodyWidth, weaponBGColor, orangeColor, basePa
             {tag="Image", attributes={color=weaponBGColor, height=tostring(basePanelHeight*3), rectAlignment="UpperLeft"}},
             {tag="Image", attributes={color=orangeColor, height="25", rectAlignment="UpperLeft"}},
             {tag="Text", attributes={id="actionNameText"..suffix, text="ACTION NAME", fontSize="17", fontStyle="Bold", color="#ffffff", alignment="UpperLeft", position="10 -2 0"}},
-            {tag="Text", attributes={id="actionAPCostText"..suffix, text="1AP", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperRight", position="-10 -7 0"}},
+            {tag="Text", attributes={id="actionAPCostText"..suffix, text="1AP", fontSize="15", fontStyle="Bold", color="#ffffff", alignment="UpperRight", position="-10 -5 0"}},
             {
                 tag="Panel", attributes={position="8 -30 0", mask="true"},
                 children={
