@@ -155,14 +155,20 @@ function buildDatasheetHUD(suffix, bodyWidth, bodyHeight, spacing,
             local lastChild = children[#children]
 
             if lastChild.tag == "Panel" then
-
                 lastChild.attributes.flexibleWidth = "true"
                 lastChild.attributes.width = tostring(bodyWidth - 2)
 
                 for _, child in ipairs(lastChild.children) do
-
                     if child.tag == "Image" and child.attributes.color == weaponBGColor then
                         child.attributes.width = tostring(bodyWidth - 2)
+                    end
+
+                    if child.tag == "Image" and child.attributes.color == orangeColor then
+                        child.attributes.width = tostring(bodyWidth - 2)
+                    end
+
+                    if child.tag == "Text" and child.attributes.id and child.attributes.id:find("actionAPCostText") then
+                        child.attributes.position = "290 -7 0"
                     end
 
                     if child.tag == "Panel" then
