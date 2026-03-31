@@ -607,6 +607,11 @@ end
 
 AbilityActionCache = {}
 
+local function cleanDescriptionText(text)
+    if not text then return "" end
+    return text:gsub("%*%*", "")
+end
+
 local function parseAbilitiesAndActionsFromState(operative, playerColor)
     local objState = operative.getTable('state') or {}
     local info = objState.info or {}
@@ -616,7 +621,7 @@ local function parseAbilitiesAndActionsFromState(operative, playerColor)
         for i, a in ipairs(info.abilities) do
             table.insert(abilities, {
                 name = a.name or ("Ability "..i),
-                description = a.text or "",
+                description = cleanDescriptionText(a.text),
                 abilityActionDescriptionPresent = (a.text and a.text ~= "")
             })
         end
@@ -631,7 +636,7 @@ local function parseAbilitiesAndActionsFromState(operative, playerColor)
             table.insert(actions, {
                 name = cleanName,
                 apCost = apCost,
-                description = act.text or "",
+                description = cleanDescriptionText(act.text),
                 abilityActionDescriptionPresent = (act.text and act.text ~= "")
             })
         end
