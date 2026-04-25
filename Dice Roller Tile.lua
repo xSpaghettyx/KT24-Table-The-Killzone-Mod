@@ -814,36 +814,34 @@ function printresultsTable(player)
 end
 
 function announceResults(params)
-  local resultTab = params["resultTab"]
-  local player_name = params["player_name"]
-  local color = params["color"]
+    local resultTab   = params["resultTab"]
+    local player_name = params["player_name"]
+    local color       = params["color"]
 
-  local rolls_for_log={}
-  local result = ""
-  for i=1,6,1 do
-    for key,value in pairs(resultTab) do
-      local rolledValue = 0
-      if type(value) == "number" then
-        rolledValue = value
-      else
-        rolledValue = value.getValue()
-      end
-      if rolledValue == i then
-        if result ~= "" then
-          result = result .. ", "
+    local rolls_for_log = {}
+    local result = ""
+
+    for i=1,6 do
+        for _,value in pairs(resultTab) do
+            local rolledValue = type(value)=="number" and value or value.getValue()
+            if rolledValue == i then
+                if result ~= "" then
+                    result = result .. ", "
+                end
+                result = result .. tostring(i)
+                table.insert(rolls_for_log, rolledValue)
+            end
         end
-        result = result .. tostring(i)
-        rolls_for_log[#rolls_for_log+1] = rolledValue
-      end
     end
-  end
 
-  local time = '[' .. os.date("%H") .. ':' .. os.date("%M") .. ':' .. os.date("%S") .. '] '
-  local message = (time or "??") .. " " .. (player_name or "NPO Operative") .. " rolls: " .. (result or "?")
-  broadcastToAll(message, stringColorToRGB(color))
-  -- add rolls to game log
-  local gamelogGuid = 'bafa93'
-  getObjectFromGUID(gamelogGuid).call('gameLogAppendRoll', {rolls=rolls_for_log, player=player_name})
+    local message = (player_name or "NPO Operative") .. " rolls: " .. (result ~= "" and result or "?")
+    broadcastToAll(message, stringColorToRGB(color))
+
+    local gamelogGuid = 'bafa93'
+    getObjectFromGUID(gamelogGuid).call('gameLogAppendRoll', {rolls=rolls_for_log, player=player_name})
+
+    local RollStatsLogGuid = 'fc9214'
+    getObjectFromGUID(RollStatsLogGuid).call('RollStatsLogAppendRoll', {rolls=rolls_for_log, color=color})
 end
 
 function multiplayerModeON()
