@@ -1,35 +1,35 @@
 baseDimensions = {
-	{ x = 25, z = 25 },
-	{ x = 28.5, z = 28.5 },
-	{ x = 32, z = 32 },
-	{ x = 40, z = 40 },
-	{ x = 50, z = 50 },
-	{ x = 55, z = 55 },
-	{ x = 60, z = 60 },
-    { x = 70, z = 70 },
-    { x = 80, z = 80 },
-    { x = 90, z = 90 },
-	{ x = 100, z = 100 },
-	{ x = 130, z = 130 },
-	{ x = 160, z = 160 },
-	{ x = 25, z = 75 },
-	{ x = 75, z = 25 },
-	{ x = 60, z = 35 },
-	{ x = 35, z = 60 },
-    { x = 42, z = 75 },
-	{ x = 75, z = 42 },
-    { x = 90, z = 52 },
-    { x = 52, z = 90 },
-    { x = 105, z = 70 },
-    { x = 70, z = 105 },
-	{ x = 120, z = 92 },
-	{ x = 92, z = 120 },
-	{ x = 150, z = 95 },
-	{ x = 95, z = 150 },
-	{ x = 170, z = 105 },
-	{ x = 105, z = 170 },
-	{ x = 170, z = 109 },
-	{ x = 109, z = 170 },
+{ x = 25, z = 25 },
+{ x = 28.5, z = 28.5 },
+{ x = 32, z = 32 },
+{ x = 40, z = 40 },
+{ x = 50, z = 50 },
+{ x = 55, z = 55 },
+{ x = 60, z = 60 },
+{ x = 70, z = 70 },
+{ x = 80, z = 80 },
+{ x = 90, z = 90 },
+{ x = 100, z = 100 },
+{ x = 130, z = 130 },
+{ x = 160, z = 160 },
+{ x = 25, z = 75 },
+{ x = 75, z = 25 },
+{ x = 60, z = 35 },
+{ x = 35, z = 60 },
+{ x = 42, z = 75 },
+{ x = 75, z = 42 },
+{ x = 90, z = 52 },
+{ x = 52, z = 90 },
+{ x = 105, z = 70 },
+{ x = 70, z = 105 },
+{ x = 120, z = 92 },
+{ x = 92, z = 120 },
+{ x = 150, z = 95 },
+{ x = 95, z = 150 },
+{ x = 170, z = 105 },
+{ x = 105, z = 170 },
+{ x = 170, z = 109 },
+{ x = 109, z = 170 },
 }
 
 state = state or {
@@ -72,6 +72,23 @@ function buildUiHeightRow()
                     {tag="Button", attributes={id="btn6", text="6''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
                 }
             }
+        }
+    }
+end
+
+function buildApplyButton()
+    return {
+        tag="Button", attributes={
+            id="btnSpecial",
+            text="Special Action",
+            fontSize="14",
+            width="200", height="40",
+            position="0 200 -100",   -- independent coordinates
+            rotation="0 0 0",
+            rectAlignment="UpperCenter",
+            color="#333399",
+            textColor="#FFFFFF",
+            onClick="specialButtonClicked"
         }
     }
 end
