@@ -66,10 +66,10 @@ function buildUiHeightRow()
                         children={{tag="Text", attributes={text="UI Height", fontSize="12", color="#FFFFFF", alignment="MiddleCenter"}}}
                     },
                     {tag="Button", attributes={id="btnAuto", text="AUTO", fontSize="12", flexibleWidth="3", color="#00AA00", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}}, -- highlighted by default
-                    {tag="Button", attributes={id="btn2", text='2"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn3", text='3"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn4", text='4"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn6", text='6"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn2", text="2''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn3", text="3''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn4", text="4''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn6", text="6''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
                 }
             }
         }
