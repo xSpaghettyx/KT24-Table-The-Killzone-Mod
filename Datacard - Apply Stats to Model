@@ -34,7 +34,14 @@ baseDimensions = {
 
 state = state or {
     uiHeightMode = "auto",
-    uiHeightValue = nil
+    uiHeightValue = nil,
+    stats = {},
+    name = "",
+    keywords = {},
+    weapons = {},
+    abilities = {},
+    actions = {},
+    weapon_rules = {}
 }
 
 function onLoad()
@@ -53,22 +60,16 @@ function buildUiHeightRow()
         children={
             {
                 tag="HorizontalLayout",
-                attributes={
-                    spacing="1",
-                    childForceExpandWidth="true",
-                    childForceExpandHeight="true"
-                },
+                attributes={spacing="1", childForceExpandWidth="true", childForceExpandHeight="true"},
                 children={
                     {tag="Panel", attributes={flexibleWidth="3.5", color="#222222"},
-                        children={
-                            {tag="Text", attributes={text="UI Height", fontSize="12", color="#FFFFFF", alignment="MiddleCenter"}}
-                        }
+                        children={{tag="Text", attributes={text="UI Height", fontSize="12", color="#FFFFFF", alignment="MiddleCenter"}}}
                     },
                     {tag="Button", attributes={id="btnAuto", text="AUTO", fontSize="12", flexibleWidth="3", color="#00AA00", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}}, -- highlighted by default
-                    {tag="Button", attributes={id="btn2",   text="2''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn3",   text="3''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn4",   text="4''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
-                    {tag="Button", attributes={id="btn6",   text="6''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn2", text='2"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn3", text='3"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn4", text='4"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn6", text='6"', fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
                 }
             }
         }
@@ -80,9 +81,9 @@ function computeUiHeight(base, mode, value)
         return value
     end
     if base.x == base.z then
-        return base.x / 12
+        return base.x / 48
     else
-        return math.min(base.x, base.z) / 12
+        return math.min(base.x, base.z) / 48
     end
 end
 
@@ -95,6 +96,7 @@ function highlightButton(activeId)
     for _, id in ipairs(ids) do
         local color = (id == activeId) and "#00AA00" or "#444444"
         self.UI.setAttribute(id, "color", color)
+        self.UI.setAttribute(id, "textColor", "#FFFFFF")
     end
 end
 
@@ -103,16 +105,11 @@ function getCurrentUiHeightMode()
     for _, id in ipairs(ids) do
         local color = self.UI.getAttribute(id, "color")
         if color == "#00AA00" then
-            if id == "btnAuto" then
-                return "auto", nil
-            elseif id == "btn2" then
-                return "fixed", 2
-            elseif id == "btn3" then
-                return "fixed", 3
-            elseif id == "btn4" then
-                return "fixed", 4
-            elseif id == "btn6" then
-                return "fixed", 6
+            if id == "btnAuto" then return "auto", nil
+            elseif id == "btn2" then return "fixed", 2
+            elseif id == "btn3" then return "fixed", 3
+            elseif id == "btn4" then return "fixed", 4
+            elseif id == "btn6" then return "fixed", 6
             end
         end
     end
@@ -155,11 +152,84 @@ function diffAndApply(model, data)
 
     if not valEq(oldHeight, newHeight) then
         table.insert(changes, string.format("UI height: %s -> %.2f", tostring(oldHeight or "-"), newHeight))
-    end
     ms.uiHeight = newHeight
+        end
+
+    local statMap = {
+        { key = "APL",    src = data.stats and data.stats.APL },
+        { key = "Move",   src = data.stats and data.stats.Move },
+        { key = "Save",   src = data.stats and data.stats.Save },
+        { key = "Wounds", src = data.stats and data.stats.Wounds },
+    }
+    for _, s in ipairs(statMap) do
+        local old = ms.stats[s.key]
+        local new = s.src
+        if not valEq(old, new) then
+            table.insert(changes, string.format("%s: %s -> %s", s.key, tostring(old or "-"), tostring(new)))
+            ms.stats[s.key] = new
+        end
+    end
+
+    if data.name and ms.info.name ~= data.name then
+        table.insert(changes, string.format("Name: %s -> %s", trunc(ms.info.name, 30), data.name))
+        ms.info.name = data.name
+        ms.info.modelType = data.name
+    end
+
+    if data.keywords and not tableEq(ms.info.categories, data.keywords) then
+        table.insert(changes, "Keywords updated")
+        ms.info.categories = data.keywords
+    end
+
+    if data.weapons then
+        local weaponNames = {}
+        for _, w in ipairs(data.weapons) do
+            table.insert(weaponNames, w.plain_name or "?")
+        end
+        table.insert(changes, string.format("Weapons: %s", table.concat(weaponNames, ", ")))
+
+        ms.info.weapons = data.weapons
+
+        local ups = {}
+        for _, w in ipairs(data.weapons) do
+            table.insert(ups, w.plain_name or w.name)
+        end
+        ms.info.upgrades = ups
+
+        ms.info.rules = data.weapon_rules or {}
+    end
+
+    if data.abilities then
+        local oldA = ms.info.abilities or {}
+        if not tableEq(oldA, data.abilities) then
+            for _, ab in ipairs(data.abilities) do
+                table.insert(changes, string.format("Ability: %s", ab.name or "?"))
+            end
+            ms.info.abilities = data.abilities
+        end
+    end
+
+    if data.actions then
+        local oldAc = ms.info.actions or {}
+        if not tableEq(oldAc, data.actions) then
+            for _, ac in ipairs(data.actions) do
+                table.insert(changes, string.format("Action: %s", ac.name or "?"))
+            end
+            ms.info.actions = data.actions
+        end
+    end
 
     rebuildDescription(model, data)
     table.insert(changes, "Description rebuilt")
+
+    if data.stats and data.stats.Wounds then
+        local w = data.stats.Wounds
+        local cur = model.getName()
+        local wStr = string.format("{%d/%d}", w, w)
+        local prefix = cur:match("^(%[%x+%].-%[%-%]%s*)") or ""
+        cur = prefix .. wStr .. " " .. (data.name or cur)
+        model.setName(cur)
+    end
 
     if #changes > 0 then
         model.script_state = JSON.encode(ms)
