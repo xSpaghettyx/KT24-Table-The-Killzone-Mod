@@ -1,5 +1,122 @@
+baseDimensions = {
+	{ x = 25, z = 25 },
+	{ x = 28.5, z = 28.5 },
+	{ x = 32, z = 32 },
+	{ x = 40, z = 40 },
+	{ x = 50, z = 50 },
+	{ x = 55, z = 55 },
+	{ x = 60, z = 60 },
+    { x = 70, z = 70 },
+    { x = 80, z = 80 },
+    { x = 90, z = 90 },
+	{ x = 100, z = 100 },
+	{ x = 130, z = 130 },
+	{ x = 160, z = 160 },
+	{ x = 25, z = 75 },
+	{ x = 75, z = 25 },
+	{ x = 60, z = 35 },
+	{ x = 35, z = 60 },
+    { x = 42, z = 75 },
+	{ x = 75, z = 42 },
+    { x = 90, z = 52 },
+    { x = 52, z = 90 },
+    { x = 105, z = 70 },
+    { x = 70, z = 105 },
+	{ x = 120, z = 92 },
+	{ x = 92, z = 120 },
+	{ x = 150, z = 95 },
+	{ x = 95, z = 150 },
+	{ x = 170, z = 105 },
+	{ x = 105, z = 170 },
+	{ x = 170, z = 109 },
+	{ x = 109, z = 170 },
+}
+
+state = state or {
+    uiHeightMode = "auto",
+    uiHeightValue = nil
+}
+
 function onLoad()
     self.addContextMenuItem("Apply stats to model", applyStatsToModel)
+    self.UI.setXmlTable({ buildUiHeightRow() })
+end
+
+function buildUiHeightRow()
+    return {
+        tag="Panel", attributes={
+            id="uiHeightRow",
+            width="250", height="50",
+            position="-70 120 -100", rotation="0 0 180", scale="0.3 1 1", rectAlignment="BottomRight",
+            color="#222222", padding="0"
+        },
+        children={
+            {
+                tag="HorizontalLayout",
+                attributes={
+                    spacing="1",
+                    childForceExpandWidth="true",
+                    childForceExpandHeight="true"
+                },
+                children={
+                    {tag="Panel", attributes={flexibleWidth="3.5", color="#222222"},
+                        children={
+                            {tag="Text", attributes={text="UI Height", fontSize="12", color="#FFFFFF", alignment="MiddleCenter"}}
+                        }
+                    },
+                    {tag="Button", attributes={id="btnAuto", text="AUTO", fontSize="12", flexibleWidth="3", color="#00AA00", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}}, -- highlighted by default
+                    {tag="Button", attributes={id="btn2",   text="2''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn3",   text="3''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn4",   text="4''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                    {tag="Button", attributes={id="btn6",   text="6''", fontSize="12", flexibleWidth="1", color="#444444", textColor="#FFFFFF", onClick="uiHeightButtonClicked"}},
+                }
+            }
+        }
+    }
+end
+
+function computeUiHeight(base, mode, value)
+    if mode == "fixed" and value then
+        return value
+    end
+    if base.x == base.z then
+        return base.x / 12
+    else
+        return math.min(base.x, base.z) / 12
+    end
+end
+
+function uiHeightButtonClicked(player, value, id)
+    highlightButton(id)
+end
+
+function highlightButton(activeId)
+    local ids = {"btnAuto","btn2","btn3","btn4","btn6"}
+    for _, id in ipairs(ids) do
+        local color = (id == activeId) and "#00AA00" or "#444444"
+        self.UI.setAttribute(id, "color", color)
+    end
+end
+
+function getCurrentUiHeightMode()
+    local ids = {"btnAuto","btn2","btn3","btn4","btn6"}
+    for _, id in ipairs(ids) do
+        local color = self.UI.getAttribute(id, "color")
+        if color == "#00AA00" then
+            if id == "btnAuto" then
+                return "auto", nil
+            elseif id == "btn2" then
+                return "fixed", 2
+            elseif id == "btn3" then
+                return "fixed", 3
+            elseif id == "btn4" then
+                return "fixed", 4
+            elseif id == "btn6" then
+                return "fixed", 6
+            end
+        end
+    end
+    return "auto", nil
 end
 
 function diffAndApply(model, data)
@@ -12,90 +129,37 @@ function diffAndApply(model, data)
         if ok and parsed then ms = parsed end
     end
 
-    ms.stats = ms.stats or {}
-    ms.info  = ms.info or {}
-
-    ms.roles = ms.roles or {}
+    ms.stats       = ms.stats or {}
+    ms.info        = ms.info or {}
+    ms.roles       = ms.roles or {}
     ms.hiddenRoles = ms.hiddenRoles or {}
-    ms.items = ms.items or {}
-    ms.holding = ms.holding or {}
-    ms.base = ms.base or { x = 0, z = 0 }
+    ms.items       = ms.items or {}
+    ms.holding     = ms.holding or {}
 
-    local statMap = {
-        { key = "APL",    src = data.stats and data.stats.APL },
-        { key = "Move",   src = data.stats and data.stats.Move },
-        { key = "Save",   src = data.stats and data.stats.Save },
-        { key = "Wounds", src = data.stats and data.stats.Wounds },
-    }
-    for _, s in ipairs(statMap) do
-        local old = ms.stats[s.key]
-        local new = s.src
-        if not valEq(old, new) then
-            table.insert(changes, string.format("%s: %s -> %s", s.key, tostring(old or "-"), tostring(new)))
-            ms.stats[s.key] = new
+    ms.base = findBase(model)
+    table.insert(changes, string.format("Base detected: %dx%d", ms.base.x, ms.base.z))
+
+    local mode, value = getCurrentUiHeightMode()
+    local oldHeight = ms.uiHeight
+    local newHeight
+
+    if mode == "fixed" and value then
+        newHeight = value
+    else
+        if ms.base.x == ms.base.z then
+            newHeight = ms.base.x / 12
+        else
+            newHeight = math.min(ms.base.x, ms.base.z) / 12
         end
     end
 
-    if data.name and ms.info.name ~= data.name then
-        table.insert(changes, string.format("Name: %s -> %s", trunc(ms.info.name, 30), data.name))
-        ms.info.name = data.name
-        ms.info.modelType = data.name
+    if not valEq(oldHeight, newHeight) then
+        table.insert(changes, string.format("UI height: %s -> %.2f", tostring(oldHeight or "-"), newHeight))
     end
-
-    if data.keywords and not tableEq(ms.info.categories, data.keywords) then
-        table.insert(changes, "Keywords updated")
-        ms.info.categories = data.keywords
-    end
-
-    if data.weapons then
-        local weaponNames = {}
-        for _, w in ipairs(data.weapons) do
-            table.insert(weaponNames, w.plain_name or "?")
-        end
-        table.insert(changes, string.format("Weapons: %s", table.concat(weaponNames, ", ")))
-
-        ms.info.weapons = data.weapons
-
-        local ups = {}
-        for _, w in ipairs(data.weapons) do
-            table.insert(ups, w.plain_name or w.name)
-        end
-        ms.info.upgrades = ups
-
-        ms.info.rules = data.weapon_rules or {}
-    end
-
-    if data.abilities then
-        local oldA = ms.info.abilities or {}
-        if not tableEq(oldA, data.abilities) then
-            for _, ab in ipairs(data.abilities) do
-                table.insert(changes, string.format("Ability: %s", ab.name or "?"))
-            end
-            ms.info.abilities = data.abilities
-        end
-    end
-
-    if data.actions then
-        local oldAc = ms.info.actions or {}
-        if not tableEq(oldAc, data.actions) then
-            for _, ac in ipairs(data.actions) do
-                table.insert(changes, string.format("Action: %s", ac.name or "?"))
-            end
-            ms.info.actions = data.actions
-        end
-    end
+    ms.uiHeight = newHeight
 
     rebuildDescription(model, data)
     table.insert(changes, "Description rebuilt")
-
-    if data.stats and data.stats.Wounds then
-        local w = data.stats.Wounds
-        local cur = model.getName()
-        local wStr = string.format("{%d/%d}", w, w)
-        local prefix = cur:match("^(%[%x+%].-%[%-%]%s*)") or ""
-        cur = prefix .. wStr .. " " .. (data.name or cur)
-        model.setName(cur)
-    end
 
     if #changes > 0 then
         model.script_state = JSON.encode(ms)
@@ -189,13 +253,38 @@ function findModelOnCard()
     })
     for _, hit in ipairs(hits) do
         local obj = hit.hit_object
-        if obj and obj ~= self and obj.hasTag("KTUIMini") then return obj end
-    end
-    for _, hit in ipairs(hits) do
-        local obj = hit.hit_object
-        if obj and obj ~= self and obj.type == "Custom_Model" then return obj end
+        if obj and obj ~= self then
+            if obj.type == "Custom_Model" or obj.type == "Figurine" then
+                return obj
+            end
+        end
     end
     return nil
+end
+
+function ensureKTUIMini(model)
+    if not model.hasTag("KTUIMini") then
+        model.addTag("KTUIMini")
+    end
+
+    local guid = model.getGUID()
+    local url = "https://raw.githubusercontent.com/xSpaghettyx/KT24-Table-The-Killzone-Mod/refs/heads/main/KT%20UI%20extender%2024%20Spaghetty%20Mod.lua"
+
+    WebRequest.get(url, function(req)
+        if req.is_error then
+            printToAll("Failed to fetch KTUIMini script: " .. req.error, {1,0,0})
+            return
+        end
+
+        local target = getObjectFromGUID(guid)
+        if target == nil then
+            printToAll("Target model no longer exists.", {1,0,0})
+            return
+        end
+
+        target.setLuaScript(req.text)
+        printToAll("Stats applied to target model.", {0,1,0})
+    end)
 end
 
 function applyStatsToModel(playerColor)
@@ -213,20 +302,48 @@ function applyStatsToModel(playerColor)
 
     local model = findModelOnCard()
     if model == nil then
-        broadcastToColor("Place a KTUIMini model on this card first.", playerColor, Color.Orange)
+        broadcastToColor("No model found. Make sure it is set to *Figurine* in Custom settings", playerColor, Color.Orange)
         return
+    else
+        ensureKTUIMini(model)
     end
 
     local changes = diffAndApply(model, data)
-    if #changes == 0 then
-        broadcastToColor("Already up to date.", playerColor, Color.White)
-    elseif #changes == 1 then
-        broadcastToColor("Updated: " .. changes[1], playerColor, Color.Green)
-    else
-        local msg = "Updated:\n"
-        for _, c in ipairs(changes) do
-            msg = msg .. " - " .. c .. "\n"
+end
+
+function findBase(obj)
+
+    local base = obj.getTable("modelBase")
+
+    if base == nil then
+        local bounds = obj.getBoundsNormalized()
+        if bounds.size.x == 0 then
+            bounds = obj.getBounds()
         end
-        broadcastToColor(msg, playerColor, Color.Green)
+
+        local baseX, baseZ = 32, 32
+        if bounds.size.x > 0 then
+
+            local boundsX = bounds.size.x * 25.4
+            local boundsZ = bounds.size.z * 25.4
+
+            local baseError = math.huge
+            for _, dim in ipairs(baseDimensions) do
+                local difx = dim.x - boundsX
+                local difz = dim.z - boundsZ
+                local dimError = difx * difx + difz * difz
+                if dimError < baseError then
+                    baseError = dimError
+                    baseX = dim.x
+                    baseZ = dim.z
+                end
+            end
+        else
+            printToOwner("Could not detect base size for this model. Defaulting to 32mm.")
+        end
+
+        base = { x = baseX, z = baseZ }
     end
+
+    return base
 end
