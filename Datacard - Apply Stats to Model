@@ -46,7 +46,7 @@ state = state or {
 
 function onLoad()
     self.addContextMenuItem("Apply stats to model", applyStatsToModel)
-    self.UI.setXmlTable({ buildUiHeightRow() })
+    self.UI.setXmlTable({ buildUiHeightRow(), buildApplyButton() })
 end
 
 function buildUiHeightRow()
@@ -80,17 +80,26 @@ function buildApplyButton()
     return {
         tag="Button", attributes={
             id="btnSpecial",
-            text="Special Action",
-            fontSize="14",
-            width="200", height="40",
-            position="0 200 -100",   -- independent coordinates
-            rotation="0 0 0",
-            rectAlignment="UpperCenter",
-            color="#333399",
+            text="APPLY KTUI SCRIPT",
+            fontSize="16",
+            width="200", height="60",
+            position="0 120 -100",
+            rotation="0 0 180",
+            scale="0.3 1 1",
+            rectAlignment="BottomCenter",
+            color="#ff7b00",
             textColor="#FFFFFF",
-            onClick="specialButtonClicked"
+            onClick="applyStatsButton"
         }
     }
+end
+
+function applyStatsButton(obj, player_color, alt_click)
+    local color = player_color
+    if color == nil or color == "" or color == "-1" then
+        color = Player.getPlayers()[1] and Player.getPlayers()[1].color or "Grey"
+    end
+    applyStatsToModel(color)
 end
 
 function computeUiHeight(base, mode, value)
@@ -374,22 +383,22 @@ function ensureKTUIMini(model)
     end)
 end
 
-function applyStatsToModel(playerColor)
+function applyStatsToModel(player_color)
     local raw = self.getDescription()
     if raw == nil or raw == "" then
-        broadcastToColor("No stat data in this card's description.", playerColor, Color.Red)
+        broadcastToColor("No stat data in this card's description.", player_color, Color.Red)
         return
     end
 
     local ok, data = pcall(function() return JSON.decode(raw) end)
     if not ok or data == nil then
-        broadcastToColor("Failed to parse card description data.", playerColor, Color.Red)
+        broadcastToColor("Failed to parse card description data.", player_color, Color.Red)
         return
     end
 
     local model = findModelOnCard()
     if model == nil then
-        broadcastToColor("No model found. Make sure it is set to *Figurine* in Custom settings", playerColor, Color.Orange)
+        broadcastToColor("No model found. Make sure it is set to *Figurine* in Custom settings", player_color, Color.Orange)
         return
     else
         ensureKTUIMini(model)
