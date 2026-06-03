@@ -49,16 +49,8 @@ local UIScale = "0.25 0.25 0.25"
 function onLoad()
     self.addContextMenuItem("Apply stats to model", applyStatsToModel)
     self.UI.setXmlTable({ buildUIHeightMenu(), buildApplyButton(), buildWeaponTable(), buildSizeRow() })
+    buildRWeaponListButtons()
 end
-
--- SIZE SELECTION/STATS
-
-local sizeState = 1
-local sizeValues = {
-    S = { control="4", move="6''", save="4+", wounds="35" },
-    M = { control="5", move="6''", save="4+", wounds="50" },
-    L = { control="6", move="6''", save="4+", wounds="75" }
-}
 
 -- SIZE SELECTION/STATS
 
@@ -200,8 +192,7 @@ function setSizeRow(stateKey)
     self.UI.setAttributes("woundsText",  { text = vals.wounds })
 end
 
-
--- WEAPON SELECT TABLE
+-- WEAPON SELECTION TABLE
 
 local WeaponSlotImage = 0
 local images = {
@@ -251,7 +242,7 @@ function buildWeaponRow(rowIndex)
                             color="#FFFFFF",
                             image=images[1],
                             imageType="KeepAspect",
-                            onClick="onWeaponSlotButtonClicked"
+                            onClick="onWeaponSlotButtonClicked",
                         }
                     }
                 }
@@ -305,6 +296,72 @@ function onWeaponSlotButtonClicked(player, value, id)
     end
 end
 
+-- WEAPON LISTS
+
+local RangedWeaponSource = [[
+Autocannon/Deathspitter/Missile Pod | 5 | 3+ | 5/6 | - ;
+Burst cannon/Scatter Laser/Devourer | 5 | 3+ | 3/4 | Ceaseless, Torrent 1" ;
+Cyclic Ion Raker | 5 | 3+ | 4/5 | Heavy (Reposition only), Piercing 1, Selection 2, Torrent 2" ;
+Flamestorm Cannon/Flamespurt | 6 | 2+ | 3/3 | Range 8", Heavy (Reposition only), Selection 2, Torrent 2" ;
+]]
+
+local weaponButtons = {}
+
+function parseWeaponSource(src)
+    local rows = {}
+    for line in src:gmatch("[^\r\n]+") do
+        line = line:gsub(";%s*$","")
+        table.insert(rows, line)
+    end
+    return rows
+end
+
+function buildRWeaponListButtons()
+    local rows = parseWeaponSource(RangedWeaponSource)
+    local columns = 2
+    local xSpacing = 1.02
+    local zSpacing = 0.1
+    local startX = -0.51
+    local startZ = 0
+
+    for i, line in ipairs(rows) do
+        local name = line:match("^(.-)|") or line
+        name = name:gsub("^%s*(.-)%s*$","%1")
+
+        local col = (i-1) % columns
+        local row = math.floor((i-1) / columns)
+
+        local posX = startX + col * xSpacing
+        local posZ = startZ - row * zSpacing
+
+        local buttonId = "weaponButton"..i
+
+        self.createButton({
+            click_function = "onWeaponButtonClicked",
+            function_owner = self,
+            label = name,
+            position = {posX, 2, posZ},
+            width = 3300,
+            height = 330,
+            font_size = 180,
+            scale = {0.15, 0.15, 0.15},
+            tooltip = line,
+            id = buttonId,
+            color = {1, 0.5, 0},
+            font_color = {1, 1, 1}
+        })
+
+        weaponButtons[i-1] = line
+    end
+end
+
+function onWeaponButtonClicked(obj, player_color, button_index)
+    for buttonId, _ in pairs(weaponButtons) do
+        self.removeButton(buttonId)
+    end
+    weaponButtons = {}
+end
+
 -- UI HEIGHT MENU
 
 function buildUIHeightMenu()
@@ -337,7 +394,6 @@ end
 function uiHeightButtonClicked(player, value, id)
     highlightButton(id)
 end
-
 
 function computeUiHeight(base, mode, value)
     if mode == "fixed" and value then
