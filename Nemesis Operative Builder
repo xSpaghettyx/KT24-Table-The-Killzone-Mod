@@ -49,35 +49,133 @@ local UIScale = "0.25 0.25 0.25"
 function onLoad()
     self.addContextMenuItem("Apply stats to model", applyStatsToModel)
     self.UI.setXmlTable({ buildUIHeightMenu(), buildApplyButton(), buildWeaponTable(), buildSizeRow() })
-    setSizeRow("S")
 end
 
 -- SIZE SELECTION/STATS
 
 local sizeState = 1
 local sizeValues = {
-    S = { control="4", move='6"', save="4+", wounds="35" },
-    M = { control="5", move='6"', save="4+", wounds="50" },
-    L = { control="6", move='6"', save="4+", wounds="75" }
+    S = { control="4", move="6''", save="4+", wounds="35" },
+    M = { control="5", move="6''", save="4+", wounds="50" },
+    L = { control="6", move="6''", save="4+", wounds="75" }
+}
+
+-- SIZE SELECTION/STATS
+
+local sizeState = 1
+local sizeValues = {
+    S = { control="4", move="6''", save="4+", wounds="35" },
+    M = { control="5", move="6''", save="4+", wounds="50" },
+    L = { control="6", move="6''", save="4+", wounds="75" }
 }
 
 function buildSizeRow()
     return {
-        tag="HorizontalLayout", attributes={spacing="10"},
+        tag="Panel", attributes={
+            rectAlignment="LowerCenter",
+            width="350", height="50",
+            position="-64 -132 -100",
+            rotation="0 0 180",
+            scale=UIScale,
+            rectAlignment="MiddleCenter",
+            color="#FFFFFF00"
+        },
         children={
             {
-                tag="Button", attributes={
-                    id="sizeButton",
-                    width="60", height="40",
-                    text="S", fontSize="18",
-                    color="#DDDDDD", textColor="#000000",
-                    onClick="onSizeButtonClicked"
+                tag="HorizontalLayout", attributes={spacing="10"},
+                children={
+                    {
+                        tag="Panel", attributes={width="40", height="40", color="#FFFFFF00"},
+                        children={
+                            {
+                                tag="Button", attributes={
+                                    id="sizeButton",
+                                    width="40", height="40",
+                                    text="S", fontSize="21",
+                                    color="#FFFFFF00",
+                                    textColor="#ffffff",
+                                    onClick="onSizeButtonClicked"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        tag="Panel", attributes={width="60", height="40", color="#FFFFFF00"},
+                        children={
+                            {
+                                tag="InputField", attributes={
+                                    id="controlText",
+                                    text="4",
+                                    fontSize="21",
+                                    width="60", height="40",
+                                    color="#FFFFFF00",
+                                    textColor="#FFFFFF",
+                                    placeholder="",
+                                    placeholderColor="#888888",
+                                    position="22 0 0",
+                                    alignment="MiddleCenter"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        tag="Panel", attributes={width="60", height="40", color="#FFFFFF00"},
+                        children={
+                            {
+                                tag="InputField", attributes={
+                                    id="moveText",
+                                    text="6''",
+                                    fontSize="21",
+                                    width="60", height="40",
+                                    color="#FFFFFF00",
+                                    textColor="#FFFFFF",
+                                    placeholder="",
+                                    placeholderColor="#888888",
+                                    position="15 0 0",
+                                    alignment="MiddleCenter"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        tag="Panel", attributes={width="60", height="40", color="#FFFFFF00"},
+                        children={
+                            {
+                                tag="InputField", attributes={
+                                    id="saveText",
+                                    text="4+",
+                                    fontSize="21",
+                                    width="60", height="40",
+                                    color="#FFFFFF00",
+                                    textColor="#FFFFFF",
+                                    placeholder="",
+                                    placeholderColor="#888888",
+                                    position="6 0 0",
+                                    alignment="MiddleCenter"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        tag="Panel", attributes={width="60", height="40", color="#FFFFFF00"},
+                        children={
+                            {
+                                tag="InputField", attributes={
+                                    id="woundsText",
+                                    text="35",
+                                    fontSize="21",
+                                    width="60", height="40",
+                                    color="#FFFFFF00",
+                                    textColor="#FFFFFF",
+                                    placeholder="",
+                                    placeholderColor="#888888",
+                                    alignment="MiddleCenter"
+                                }
+                            }
+                        }
+                    }
                 }
-            },
-            {tag="Text", attributes={id="controlText", text="", fontSize="18", color="#000000", alignment="MiddleCenter", flexibleWidth="1"}},
-            {tag="Text", attributes={id="moveText",    text="", fontSize="18", color="#000000", alignment="MiddleCenter", flexibleWidth="1"}},
-            {tag="Text", attributes={id="saveText",    text="", fontSize="18", color="#000000", alignment="MiddleCenter", flexibleWidth="1"}},
-            {tag="Text", attributes={id="woundsText",  text="", fontSize="18", color="#000000", alignment="MiddleCenter", flexibleWidth="1"}}
+            }
         }
     }
 end
@@ -90,12 +188,18 @@ end
 
 function setSizeRow(stateKey)
     local vals = sizeValues[stateKey]
-    self.UI.setAttributes("sizeButton", { text = stateKey })
+    self.UI.setAttributes("sizeButton", {
+        text = stateKey,
+        textColor = "#FFFFFF",
+        textColorHover = "#FFFFFF",
+        textColorPressed = "#FFFFFF"
+    })
     self.UI.setAttributes("controlText", { text = vals.control })
     self.UI.setAttributes("moveText",    { text = vals.move })
     self.UI.setAttributes("saveText",    { text = vals.save })
     self.UI.setAttributes("woundsText",  { text = vals.wounds })
 end
+
 
 -- WEAPON SELECT TABLE
 
