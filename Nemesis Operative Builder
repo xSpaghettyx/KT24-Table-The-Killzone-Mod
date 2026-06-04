@@ -48,8 +48,13 @@ local UIScale = "0.25 0.25 0.25"
 
 function onLoad()
     self.addContextMenuItem("Apply stats to model", applyStatsToModel)
-    self.UI.setXmlTable({ buildUIHeightMenu(), buildApplyButton(), buildWeaponTable(), buildSizeRow() })
-    buildRWeaponListButtons()
+    self.UI.setXmlTable({
+        buildUIHeightMenu(),
+        buildApplyButton(),
+        buildWeaponTable(),
+        buildSizeRow(),
+        buildRWeaponListTable()
+    })
 end
 
 -- SIZE SELECTION/STATS
@@ -248,118 +253,226 @@ function buildWeaponRow(rowIndex)
                 }
             },
             {
-                tag="Panel", attributes={flexibleWidth="3.5"},
+                tag="Panel", attributes={flexibleWidth="4.1"},
                 children={
-                    {tag="Text", attributes={id="row"..rowIndex.."_weaponName", text="Autocannon", fontSize="18", color="#000000", alignment="MiddleLeft"}}
+                    {
+                        tag="InputField", attributes={
+                            id="row"..rowIndex.."_weaponName",
+                            text="Autocannon",
+                            fontSize="18",
+                            width="220", height="60",
+                            color="#24242450",
+                            textColor="#000000",
+                            placeholder="",
+                            placeholderColor="#888888",
+                            alignment="MiddleLeft",
+                            lineType="MultiLineNewline",
+                            multiline="true",
+                            autoSize="true"
+                        }
+                    }
                 }
             },
             {
-                tag="Panel", attributes={flexibleWidth="0.7"},
+                tag="Panel", attributes={flexibleWidth="0.3"},
                 children={
-                    {tag="Text", attributes={id="row"..rowIndex.."_atk", text="5", fontSize="18", color="#000000", alignment="MiddleCenter"}}
+                    {
+                        tag="InputField", attributes={
+                            id="row"..rowIndex.."_atk",
+                            text="5",
+                            fontSize="18",
+                            width="40", height="40",
+                            color="#49494948",
+                            textColor="#000000",
+                            placeholder="",
+                            placeholderColor="#888888",
+                            alignment="MiddleCenter"
+                        }
+                    }
                 }
             },
             {
-                tag="Panel", attributes={flexibleWidth="0.7"},
+                tag="Panel", attributes={flexibleWidth="0.3"},
                 children={
-                    {tag="Text", attributes={id="row"..rowIndex.."_hit", text="3+", fontSize="18", color="#000000", alignment="MiddleCenter"}}
+                    {
+                        tag="InputField", attributes={
+                            id="row"..rowIndex.."_hit",
+                            text="3+",
+                            fontSize="18",
+                            width="50", height="40",
+                            color="#3b3b3b57",
+                            textColor="#000000",
+                            placeholder="",
+                            placeholderColor="#888888",
+                            alignment="MiddleCenter"
+                        }
+                    }
                 }
             },
             {
-                tag="Panel", attributes={flexibleWidth="0.7"},
+                tag="Panel", attributes={flexibleWidth="0.3"},
                 children={
-                    {tag="Text", attributes={id="row"..rowIndex.."_dmg", text="4/5", fontSize="18", color="#000000", alignment="MiddleCenter"}}
+                    {
+                        tag="InputField", attributes={
+                            id="row"..rowIndex.."_dmg",
+                            text="4/5",
+                            fontSize="18",
+                            width="50", height="40",
+                            color="#43434376",
+                            textColor="#000000",
+                            placeholder="",
+                            placeholderColor="#888888",
+                            alignment="MiddleCenter"
+                        }
+                    }
                 }
             },
             {
-                tag="Panel", attributes={flexibleWidth="7"},
+                tag="Panel", attributes={flexibleWidth="8"},
                 children={
-                    {tag="Text", attributes={id="row"..rowIndex.."_wr", text="Rending, Balanced", fontSize="18", color="#000000", alignment="MiddleLeft"}}
+                    {
+                        tag="InputField", attributes={
+                            id="row"..rowIndex.."_wr",
+                            text="Rending, Balanced",
+                            fontSize="18",
+                            width="400", height="60",
+                            color="#ffffff89",
+                            textColor="#000000",
+                            placeholder="",
+                            placeholderColor="#888888",
+                            alignment="MiddleLeft",
+                            lineType="MultiLineNewline",
+                            multiline="true",
+                            autoSize="true"
+                        }
+                    }
                 }
             }
         }
     }
 end
 
+local LastCycleRow = nil
+
 function onWeaponSlotButtonClicked(player, value, id)
     WeaponSlotImage = (WeaponSlotImage + 1) % #images
     self.UI.setAttributes(id, { image = images[WeaponSlotImage + 1] })
 
     local rowIndex = string.match(id, "row(%d+)_btnCycle")
-
     if rowIndex then
         self.UI.setAttributes("row"..rowIndex.."_weaponName", { text = " " })
         self.UI.setAttributes("row"..rowIndex.."_atk",        { text = " " })
         self.UI.setAttributes("row"..rowIndex.."_hit",        { text = " " })
         self.UI.setAttributes("row"..rowIndex.."_dmg",        { text = " " })
         self.UI.setAttributes("row"..rowIndex.."_wr",         { text = " " })
+
+        LastCycleRow = tonumber(rowIndex)
+    end
+
+    if WeaponSlotImage == 1 then
+        self.UI.setAttributes("RweaponGrid", {active="true"})
+    else
+        self.UI.setAttributes("RweaponGrid", {active="false"})
     end
 end
 
 -- WEAPON LISTS
 
-local RangedWeaponSource = [[
-Autocannon/Deathspitter/Missile Pod | 5 | 3+ | 5/6 | - ;
-Burst cannon/Scatter Laser/Devourer | 5 | 3+ | 3/4 | Ceaseless, Torrent 1" ;
-Cyclic Ion Raker | 5 | 3+ | 4/5 | Heavy (Reposition only), Piercing 1, Selection 2, Torrent 2" ;
-Flamestorm Cannon/Flamespurt | 6 | 2+ | 3/3 | Range 8", Heavy (Reposition only), Selection 2, Torrent 2" ;
-]]
+local RangedWeapons = {
+    { name="Autocannon/Deathspitter/Missile Pod", atk="5", hit="3+", dmg="5/6", wr="-" },
+    { name="Burst cannon/Scatter Laser/Devourer", atk="5", hit="3+", dmg="3/4", wr="Ceaseless, Torrent 1\"" },
+    { name="Cyclic ion raker", atk="5", hit="3+", dmg="4/5", wr="Heavy (Reposition only), Piercing 1, Selection 2, Torrent 2\"" },
+    { name="Flamestorm Cannon/Flamespurt", atk="6", hit="2+", dmg="3/3", wr="Range 8\", Heavy (Reposition only), Selection 2, Torrent 2\"" },
+    { name="Havoc launcher/Grotzooka/Spore Mine Launcher", atk="4", hit="3+", dmg="4/6", wr="Blast 2\"" },
+    { name="Heavy bolter", atk="5", hit="3+", dmg="4/5", wr="Piercing Crits l, Torrent l\"" },
+    { name="Heavy flamer/Incendine Combustor/Liquifier Gun/Skorcha", atk="5", hit="2+", dmg="3/3", wr="Range 8\", Saturate, Torrent 2\"" },
+    { name="Heavy Onslaught Gatling Cannon/Avenger Chaincannon/Enmitic Exterminator", atk="6", hit="3+", dmg="4/5", wr="Heavy (Reposition only), Selection 2, Torrent 2\"" },
+}
 
-local weaponButtons = {}
-
-function parseWeaponSource(src)
-    local rows = {}
-    for line in src:gmatch("[^\r\n]+") do
-        line = line:gsub(";%s*$","")
-        table.insert(rows, line)
-    end
-    return rows
-end
-
-function buildRWeaponListButtons()
-    local rows = parseWeaponSource(RangedWeaponSource)
+function buildRWeaponListTable()
     local columns = 2
-    local xSpacing = 1.02
-    local zSpacing = 0.1
-    local startX = -0.51
-    local startZ = 0
+    local totalRows = math.ceil(#RangedWeapons / columns)
 
-    for i, line in ipairs(rows) do
-        local name = line:match("^(.-)|") or line
-        name = name:gsub("^%s*(.-)%s*$","%1")
+    local xml = {
+        tag="Panel", attributes={id="RweaponGrid", width="600", height=tostring(totalRows*150), active="false"},
+        children={
+            {
+                tag="VerticalLayout", attributes={
+                    spacing="5",
+                    position="0 -65 -100",
+                    rotation="0 0 180",
+                    scale=UIScale
+                },
+                children={}
+            }
+        }
+    }
 
-        local col = (i-1) % columns
-        local row = math.floor((i-1) / columns)
+    for r = 1, totalRows do
+        local rowLayout = { tag="HorizontalLayout", attributes={spacing="5"}, children={} }
 
-        local posX = startX + col * xSpacing
-        local posZ = startZ - row * zSpacing
+        for c = 1, columns do
+            local idx = (r-1)*columns + c
+            local weapon = RangedWeapons[idx]
+            if weapon then
+                table.insert(rowLayout.children, {
+                    tag="Button",
+                    attributes={
+                        id="weaponButton"..idx,
+                        onClick="onWeaponButtonClicked",
+                        width="250", height="150",
+                        color="#3e3e3e", textColor="#FFFFFF"
+                    },
+                    children={
+                        {
+                            tag="VerticalLayout", attributes={spacing="2", padding="2"},
+                            children={
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="14", textColor="#ffaa00", color="#ffaa00", outline="false", fontStyle="Bold"},
+                                    value=weapon.name
+                                },
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
+                                    value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                },
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
+                                    value="WR "..weapon.wr
+                                }
+                            }
+                        }
+                    }
+                })
+            else
+                table.insert(rowLayout.children, { tag="Panel", attributes={width="250", height="150"} })
+            end
+        end
 
-        local buttonId = "weaponButton"..i
-
-        self.createButton({
-            click_function = "onWeaponButtonClicked",
-            function_owner = self,
-            label = name,
-            position = {posX, 2, posZ},
-            width = 3300,
-            height = 330,
-            font_size = 180,
-            scale = {0.15, 0.15, 0.15},
-            tooltip = line,
-            id = buttonId,
-            color = {1, 0.5, 0},
-            font_color = {1, 1, 1}
-        })
-
-        weaponButtons[i-1] = line
+        table.insert(xml.children[1].children, rowLayout)
     end
+
+    return xml
 end
 
-function onWeaponButtonClicked(obj, player_color, button_index)
-    for buttonId, _ in pairs(weaponButtons) do
-        self.removeButton(buttonId)
-    end
-    weaponButtons = {}
+function onWeaponButtonClicked(player, value, id)
+    print("Weapon button clicked: "..id)
+
+    self.UI.setAttributes("RweaponGrid", {active="false"})
+
+    local idx = tonumber(id:match("%d+"))
+    local weapon = RangedWeapons[idx]
+    if not weapon then return end
+
+    local targetRow = LastCycleRow or 1
+
+    self.UI.setAttributes("row"..targetRow.."_weaponName", { text = weapon.name })
+    self.UI.setAttributes("row"..targetRow.."_atk",        { text = weapon.atk })
+    self.UI.setAttributes("row"..targetRow.."_hit",        { text = weapon.hit })
+    self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
+    self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
 end
 
 -- UI HEIGHT MENU
