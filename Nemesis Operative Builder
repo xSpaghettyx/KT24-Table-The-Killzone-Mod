@@ -384,17 +384,73 @@ local RangedWeapons = {
     { name="Cyclic ion raker", atk="5", hit="3+", dmg="4/5", wr="Heavy (Reposition only), Piercing 1, Selection 2, Torrent 2\"" },
     { name="Flamestorm Cannon/Flamespurt", atk="6", hit="2+", dmg="3/3", wr="Range 8\", Heavy (Reposition only), Selection 2, Torrent 2\"" },
     { name="Havoc launcher/Grotzooka/Spore Mine Launcher", atk="4", hit="3+", dmg="4/6", wr="Blast 2\"" },
-    { name="Heavy bolter", atk="5", hit="3+", dmg="4/5", wr="Piercing Crits l, Torrent l\"" },
+    { name="Heavy bolter", atk="5", hit="3+", dmg="4/5", wr="Piercing Crits 1, Torrent 1\"" },
     { name="Heavy flamer/Incendine Combustor/Liquifier Gun/Skorcha", atk="5", hit="2+", dmg="3/3", wr="Range 8\", Saturate, Torrent 2\"" },
     { name="Heavy Onslaught Gatling Cannon/Avenger Chaincannon/Enmitic Exterminator", atk="6", hit="3+", dmg="4/5", wr="Heavy (Reposition only), Selection 2, Torrent 2\"" },
+    { name="Heavy Phosphor Blaster", atk="5", hit="3+", dmg="4/5", wr="Saturate, Severe" },
+    { name="Heavy Rail Rifle/Doomsday Blaster/Gauss Destructor", atk="5", hit="3+", dmg="6/7", wr="Heavy (Reposition only), Piercing 2, Selection 2" },
+    { name="Heavy Stubber/Big shoota", atk="5", hit="3+", dmg="4/5", wr="Torrent 1\"" },
+    { name="Lascannon/Bright Lance/Dark Lance", atk="4", hit="3+", dmg="6/7", wr="Heavy (Reposition only), Piercing 2" },
+
+    { name="Macro Plasma Incinerator (standard)", atk="5", hit="3+", dmg="4/6", wr="Blast 2\", Heavy (Reposition only), Piercing 1, Selection 2", paired=true },
+    { name="Macro Plasma Incinerator (Supercharged)", atk="5", hit="3+", dmg="5/6", wr="Blast 2\", Heavy (Reposition only), Lethal 5+, Hot, Piercing 1, Selection 2", paired=true },
+
+    { name="Meltagun/Fusion Blaster/Heat Lance", atk="4", hit="3+", dmg="6/3", wr="Range 6\", Devastating 4, Piercing 2" },
+
+    { name="Missile Launcher (frag)", atk="4", hit="3+", dmg="3/5", wr="Blast 2\"", paired=true },
+    { name="Missile Launcher (krak)", atk="4", hit="3+", dmg="5/7", wr="Piercing 1", paired=true },
+
+    { name="Multi-melta", atk="4", hit="3+", dmg="6/3", wr="Devastating 4, Heavy (Reposition only), Piercing 2" },
+
+    { name="Plasma Cannon (standard)", atk="4", hit="3+", dmg="4/6", wr="Blast 2\", Heavy (Reposition only), Piercing 1", paired=true },
+    { name="Plasma Cannon (supercharged)", atk="4", hit="3+", dmg="5/6", wr="Blast 2\", Heavy (Reposition only), Lethal 5+, Hot, Piercing 1", paired=true },
+
+    { name="Plasma Gun (standard)", atk="4", hit="3+", dmg="4/6", wr="Piercing 1", paired=true },
+    { name="Plasma Gun (supercharged)", atk="4", hit="3+", dmg="5/6", wr="Lethal 5+, Hot, Piercing 1", paired=true },
+
+    { name="Rokkit Launcha", atk="6", hit="4+", dmg="4/5", wr="Blast 1\"" },
+    { name="Shuriken Cannon", atk="5", hit="3+", dmg="4/5", wr="Rending, Torrent 1\"" },
+    { name="Splinter Cannon", atk="5", hit="3+", dmg="3/5", wr="Lethal 5+, Torrent 1\"" },
+    { name="Starcannon/Heavy Venom Cannon/Kustom mega-blasta", atk="4", hit="3+", dmg="5/6", wr="Lethal 5+, Piercing 1" },
+    { name="Stranglethorn Cannon", atk="5", hit="3+", dmg="3/5", wr="Blast 2\", Lethal 5+" },
+    { name="Thermal Spear/Fusion Collider", atk="5", hit="3+", dmg="6/3", wr="Devastating 4, Heavy (Reposition only), Piercing 2, Selection 2" },
+    { name="Twinned Weapon", atk="-", hit="-", dmg="-", wr="Twinned: Select one other ranged weapon this operative has to have a Ceaseless weapon rule (or +1 ATK if it's a Burst Cannon)" },
 }
 
+function buildWeaponPairs()
+    local pairs = {}
+    local currentPair = {}
+
+    for i, weapon in ipairs(RangedWeapons) do
+        if weapon.paired then
+            table.insert(currentPair, i)
+            if #currentPair == 2 then
+                table.insert(pairs, { currentPair[1], currentPair[2] })
+                currentPair = {}
+            end
+        end
+    end
+
+    return pairs
+end
+
+local pairedWeapons = buildWeaponPairs()
+
+function findWeaponPair(idx)
+    for _, pair in ipairs(pairedWeapons) do
+        if pair[1] == idx or pair[2] == idx then
+            return pair
+        end
+    end
+    return nil
+end
+
 function buildRWeaponListTable()
-    local columns = 2
+    local columns = 3
     local totalRows = math.ceil(#RangedWeapons / columns)
 
     local xml = {
-        tag="Panel", attributes={id="RweaponGrid", width="600", height=tostring(totalRows*150), active="false"},
+        tag="Panel", attributes={id="RweaponGrid", width="750", height=tostring(totalRows*150), active="false"},
         children={
             {
                 tag="VerticalLayout", attributes={
@@ -420,7 +476,7 @@ function buildRWeaponListTable()
                     attributes={
                         id="weaponButton"..idx,
                         onClick="onWeaponButtonClicked",
-                        width="250", height="150",
+                        width="240", height="150",
                         color="#3e3e3e", textColor="#FFFFFF"
                     },
                     children={
@@ -447,7 +503,7 @@ function buildRWeaponListTable()
                     }
                 })
             else
-                table.insert(rowLayout.children, { tag="Panel", attributes={width="250", height="150"} })
+                table.insert(rowLayout.children, { tag="Panel", attributes={width="240", height="150"} })
             end
         end
 
@@ -459,7 +515,6 @@ end
 
 function onWeaponButtonClicked(player, value, id)
     print("Weapon button clicked: "..id)
-
     self.UI.setAttributes("RweaponGrid", {active="false"})
 
     local idx = tonumber(id:match("%d+"))
@@ -467,12 +522,35 @@ function onWeaponButtonClicked(player, value, id)
     if not weapon then return end
 
     local targetRow = LastCycleRow or 1
+    local pair = findWeaponPair(idx)
 
-    self.UI.setAttributes("row"..targetRow.."_weaponName", { text = weapon.name })
-    self.UI.setAttributes("row"..targetRow.."_atk",        { text = weapon.atk })
-    self.UI.setAttributes("row"..targetRow.."_hit",        { text = weapon.hit })
-    self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
-    self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
+    if pair then
+        local w1 = RangedWeapons[pair[1]]
+        local w2 = RangedWeapons[pair[2]]
+
+        if w1 then
+            self.UI.setAttributes("row"..targetRow.."_weaponName", { text = w1.name })
+            self.UI.setAttributes("row"..targetRow.."_atk",        { text = w1.atk })
+            self.UI.setAttributes("row"..targetRow.."_hit",        { text = w1.hit })
+            self.UI.setAttributes("row"..targetRow.."_dmg",        { text = w1.dmg })
+            self.UI.setAttributes("row"..targetRow.."_wr",         { text = w1.wr })
+        end
+
+        if w2 then
+            local nextRow = targetRow + 1
+            self.UI.setAttributes("row"..nextRow.."_weaponName", { text = w2.name })
+            self.UI.setAttributes("row"..nextRow.."_atk",        { text = w2.atk })
+            self.UI.setAttributes("row"..nextRow.."_hit",        { text = w2.hit })
+            self.UI.setAttributes("row"..nextRow.."_dmg",        { text = w2.dmg })
+            self.UI.setAttributes("row"..nextRow.."_wr",         { text = w2.wr })
+        end
+    else
+        self.UI.setAttributes("row"..targetRow.."_weaponName", { text = weapon.name })
+        self.UI.setAttributes("row"..targetRow.."_atk",        { text = weapon.atk })
+        self.UI.setAttributes("row"..targetRow.."_hit",        { text = weapon.hit })
+        self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
+        self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
+    end
 end
 
 -- UI HEIGHT MENU
