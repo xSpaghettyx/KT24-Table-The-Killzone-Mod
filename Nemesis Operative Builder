@@ -54,8 +54,39 @@ function onLoad()
         buildWeaponTable(),
         buildSizeRow(),
         buildRWeaponListTable(),
-        buildMWeaponListTable()
+        buildMWeaponListTable(),
+        buildNameTextField()
     })
+end
+
+-- NAME TEXT FIELD
+
+function buildNameTextField()
+    return {
+        tag="Panel", attributes={
+            rectAlignment="MiddleCenter",
+            width="400", height="50",
+            position="55 -130 -100",
+            rotation="0 0 180",
+            scale=UIScale,
+            color="#FFFFFF00"
+        },
+        children={
+            {
+                tag="InputField", attributes={
+                    id="operativeName",
+                    text="Enter NEMESIS name here",
+                    fontSize="21",
+                    width="400", height="50",
+                    color="#FFFFFF00",
+                    textColor="#FFFFFF",
+                    placeholder="Nemesis Operative",
+                    placeholderColor="#888888",
+                    alignment="MiddleCenter"
+                }
+            }
+        }
+    }
 end
 
 -- SIZE SELECTION/STATS
