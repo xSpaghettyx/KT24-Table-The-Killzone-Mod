@@ -53,7 +53,8 @@ function onLoad()
         buildApplyButton(),
         buildWeaponTable(),
         buildSizeRow(),
-        buildRWeaponListTable()
+        buildRWeaponListTable(),
+        buildMWeaponListTable()
     })
 end
 
@@ -371,8 +372,13 @@ function onWeaponSlotButtonClicked(player, value, id)
 
     if WeaponSlotImage == 1 then
         self.UI.setAttributes("RweaponGrid", {active="true"})
-    else
-        self.UI.setAttributes("RweaponGrid", {active="false"})
+        self.UI.setAttributes("MweaponGrid", {active="false"})
+    elseif WeaponSlotImage == 2 then
+        self.UI.setAttributes("RweaponGrid", {active="false"})         
+        self.UI.setAttributes("MweaponGrid", {active="true"})
+    elseif WeaponSlotImage == 0 then
+        self.UI.setAttributes("RweaponGrid", {active="false"})        
+        self.UI.setAttributes("MweaponGrid", {active="false"})
     end
 end
 
@@ -417,6 +423,20 @@ local RangedWeapons = {
     { name="Twinned Weapon", atk="-", hit="-", dmg="-", wr="Twinned: Select one other ranged weapon this operative has to have a Ceaseless weapon rule (or +1 ATK if it's a Burst Cannon)" },
 }
 
+local MeleeWeapons = {
+    { name="Chain Weapon", atk="4", hit="3+", dmg="5/6", wr="Brutal, Rending" },
+    { name="Close Combat Weapon", atk="3", hit="4+", dmg="4/5", wr="Selection 0" },
+    { name="Dread Saw", atk="5", hit="3+", dmg="4/5", wr="Rending" },
+    { name="Fleshmower", atk="5", hit="2+", dmg="4/5", wr="Brutal" },
+    { name="Power Fist/Crushing Claw", atk="4", hit="3+", dmg="6/8", wr="Brutal, Shock" },
+    { name="Power Scourge/Lasher Tendrils", atk="6", hit="3+", dmg="3/5", wr="Lethal 5+" },
+    { name="Power Talon", atk="4", hit="3+", dmg="5/6", wr="Lethal 5+, Rending" },
+    { name="Power weapon/Ghostglaive", atk="4", hit="3+", dmg="5/7", wr="Lethal 5+" },
+    { name="Scything talons/Macro-scalpels", atk="5", hit="3+", dmg="4/6", wr="Ceaseless" },
+    { name="Thunder Hammer", atk="4", hit="3+", dmg="6/8", wr="Shock, Stun" },
+    { name="Paired weapon", atk="-", hit="-", dmg="-", wr="Paired: Select one other melee weapon this operative has and add 1 to its ATK stat." },
+}
+
 function buildWeaponPairs()
     local pairs = {}
     local currentPair = {}
@@ -445,17 +465,17 @@ function findWeaponPair(idx)
     return nil
 end
 
-function buildRWeaponListTable()
+function buildMWeaponListTable()
     local columns = 3
-    local totalRows = math.ceil(#RangedWeapons / columns)
+    local totalRows = math.ceil(#MeleeWeapons / columns)
 
     local xml = {
-        tag="Panel", attributes={id="RweaponGrid", width="750", height=tostring(totalRows*150), active="false"},
+        tag="Panel", attributes={id="MweaponGrid", width="750", height=tostring(totalRows*150), active="false"},
         children={
             {
                 tag="VerticalLayout", attributes={
                     spacing="5",
-                    position="-10 0 -100",
+                    position="-10 -50 -100",
                     rotation="0 0 180",
                     scale=UIScale
                 },
@@ -469,13 +489,13 @@ function buildRWeaponListTable()
 
         for c = 1, columns do
             local idx = (r-1)*columns + c
-            local weapon = RangedWeapons[idx]
+            local weapon = MeleeWeapons[idx]
             if weapon then
                 table.insert(rowLayout.children, {
                     tag="Button",
                     attributes={
-                        id="weaponButton"..idx,
-                        onClick="onWeaponButtonClicked",
+                        id="MweaponButton"..idx,
+                        onClick="onMWeaponButtonClicked",
                         width="240", height="150",
                         color="#3e3e3e", textColor="#FFFFFF"
                     },
@@ -513,8 +533,75 @@ function buildRWeaponListTable()
     return xml
 end
 
-function onWeaponButtonClicked(player, value, id)
-    print("Weapon button clicked: "..id)
+function buildRWeaponListTable()
+    local columns = 3
+    local totalRows = math.ceil(#RangedWeapons / columns)
+
+    local xml = {
+        tag="Panel", attributes={id="RweaponGrid", width="750", height=tostring(totalRows*150), active="false"},
+        children={
+            {
+                tag="VerticalLayout", attributes={
+                    spacing="5",
+                    position="-10 0 -100",
+                    rotation="0 0 180",
+                    scale=UIScale
+                },
+                children={}
+            }
+        }
+    }
+
+    for r = 1, totalRows do
+        local rowLayout = { tag="HorizontalLayout", attributes={spacing="5"}, children={} }
+
+        for c = 1, columns do
+            local idx = (r-1)*columns + c
+            local weapon = RangedWeapons[idx]
+            if weapon then
+                table.insert(rowLayout.children, {
+                    tag="Button",
+                    attributes={
+                        id="RweaponButton"..idx,
+                        onClick="onRWeaponButtonClicked",
+                        width="240", height="150",
+                        color="#3e3e3e", textColor="#FFFFFF"
+                    },
+                    children={
+                        {
+                            tag="VerticalLayout", attributes={spacing="2", padding="2"},
+                            children={
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="14", textColor="#ff8400", color="#ff8400", outline="false", fontStyle="Bold"},
+                                    value=weapon.name
+                                },
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
+                                    value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                },
+                                {
+                                    tag="Text",
+                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
+                                    value="WR "..weapon.wr
+                                }
+                            }
+                        }
+                    }
+                })
+            else
+                table.insert(rowLayout.children, { tag="Panel", attributes={width="240", height="150"} })
+            end
+        end
+
+        table.insert(xml.children[1].children, rowLayout)
+    end
+
+    return xml
+end
+
+function onRWeaponButtonClicked(player, value, id)
     self.UI.setAttributes("RweaponGrid", {active="false"})
 
     local idx = tonumber(id:match("%d+"))
@@ -551,6 +638,23 @@ function onWeaponButtonClicked(player, value, id)
         self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
         self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
     end
+end
+
+function onMWeaponButtonClicked(player, value, id)
+    self.UI.setAttributes("MweaponGrid", {active="false"})
+
+    local idx = tonumber(id:match("%d+"))
+    local weapon = MeleeWeapons[idx]
+    if not weapon then return end
+
+    local targetRow = LastCycleRow or 1
+
+        self.UI.setAttributes("row"..targetRow.."_weaponName", { text = weapon.name })
+        self.UI.setAttributes("row"..targetRow.."_atk",        { text = weapon.atk })
+        self.UI.setAttributes("row"..targetRow.."_hit",        { text = weapon.hit })
+        self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
+        self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
+
 end
 
 -- UI HEIGHT MENU
