@@ -56,6 +56,8 @@ function onLoad()
         buildNameTextField(),
         buildCoreRuleSelect(),
         buildNpoBehaviourSelect(),
+        buildAllegianceTrait(),
+        buildNemesisTraitRow(),
         buildRWeaponListTable(),
         buildMWeaponListTable()
     })
@@ -688,6 +690,176 @@ function onMWeaponButtonClicked(player, value, id)
         self.UI.setAttributes("row"..targetRow.."_dmg",        { text = weapon.dmg })
         self.UI.setAttributes("row"..targetRow.."_wr",         { text = weapon.wr })
 
+end
+
+-- ALLEGIANCE TRAIT SELECTION
+
+function buildAllegianceTrait()
+    return {
+        tag="Panel", attributes={
+            id="allegianceTrait",
+            position="77 28 -50",
+            rotation="0 0 180",
+            scale=UIScale,
+            width="189", height="248"
+        },
+        children={
+            {
+                tag="HorizontalLayout", attributes={spacing="0"},
+                children={
+                    {
+                        tag="Button", attributes={
+                            id="allegianceTrait_sideButton",
+                            flexibleWidth="1",
+                            flexibleHeight="1",
+                            color="#FF8000",
+                            onClick="onAllegianceTraitClicked"
+                        }
+                    },
+                    {
+                        tag="VerticalLayout", attributes={spacing="0", flexibleWidth="20"},
+                        children={
+                            {
+                                tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id="allegianceTrait_header",
+                                            text=[[IMPERIUM: DEFENDERS OF THE IMPERIUM]],
+                                            fontStyle="Bold",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="MiddleLeft",
+                                            position="0 -6 0",
+                                            width="180", height="50",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                tag="Panel", attributes={flexibleHeight="6", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id="allegianceTrait_body",
+                                            text="Whenever a LEAGUES OF VOTANN NPO or friendly LEAGUES OF VOTANN NEMESIS operative is shooting against or fighting against an enemy operative that contests an objective marker, or an area of the killzone that determines victory, that LEAGUES OF VOTANN operative's weapons have the Balanced weapon rule.",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="UpperLeft",
+                                            width="180", height="220",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+end
+
+function onAllegianceTraitClicked(player, value, id)
+    print("allegianceTrait clicked by "..player)
+end
+
+-- NEMESIS TRAIT SELECTION
+
+function buildNemesisTraitRow()
+    return {
+        tag="Panel", attributes={
+            id="nemesisTraitRow",
+            position="0 28 -50",
+            rotation="0 0 180",
+            scale=UIScale,
+            width="600", height="248",
+            color="#00000000"
+        },
+        children={
+            buildNemesisTrait("nemesisTrait1"),
+            buildNemesisTrait("nemesisTrait2"),
+            buildNemesisTrait("nemesisTrait3")
+        }
+    }
+end
+
+function buildNemesisTrait(idSuffix)
+    return {
+        tag="Panel", attributes={
+            id=idSuffix,
+            width="189", height="248",
+            color="#00000000"
+        },
+        children={
+            {
+                tag="HorizontalLayout", attributes={spacing="0"},
+                children={
+                    -- Side button
+                    {
+                        tag="Button", attributes={
+                            id=idSuffix.."_sideButton",
+                            width="24", height="248",
+                            color="#FF8000",
+                            onClick="onNemesisTraitClicked"
+                        }
+                    },
+                    -- Header + Body stack
+                    {
+                        tag="VerticalLayout", attributes={spacing="0"},
+                        children={
+                            {
+                                tag="Panel", attributes={height="50", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id=idSuffix.."_header",
+                                            text="NEMESIS HEADER",
+                                            fontStyle="Bold",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="MiddleLeft",
+                                            width="160", height="50",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                tag="Panel", attributes={height="198", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id=idSuffix.."_body",
+                                            text="Nemesis trait description goes here...",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="UpperLeft",
+                                            width="160", height="198",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+end
+
+function onNemesisTraitClicked(player, value, id)
+    print("nemesisTrait clicked by "..player)
 end
 
 -- NEMESIS CORE RULES
