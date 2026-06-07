@@ -55,6 +55,7 @@ function onLoad()
         buildSizeRow(),
         buildNameTextField(),
         buildCoreRuleSelect(),
+        buildNpoBehaviourSelect(),
         buildRWeaponListTable(),
         buildMWeaponListTable()
     })
@@ -780,6 +781,111 @@ function onCoreRuleBtnClicked(player, value, id)
             textColorPressed="#80808080",
             opacity="1"
         })
+    end
+end
+
+-- NPO BEHAVIOUR
+
+local npoBehaviourStates = { true, false, false, false }
+
+function buildNpoBehaviourSelect()
+    return {
+        tag="Panel", attributes={
+            id="NpoBehaviourPanel",
+            position="54 144 -50",
+            rotation="0 0 180",
+            width="160", height="60",
+            scale=UIScale,
+            color="#FFFFFF00"
+        },
+        children={
+            {
+                tag="GridLayout", attributes={
+                    id="NpoBehaviourGrid",
+                    cellSize="78 28",
+                    spacing="3 3",
+                    flexibleWidth="1",
+                    flexibleHeight="1"
+                },
+                children={
+                    {
+                        tag="Button", attributes={
+                            id="NpoBtn1",
+                            text="BRAWLER",
+                            fontSize="10",
+                            color="#ff7b00",
+                            textColor="#FFFFFF",
+                            textColorHover="#FFFFFF",
+                            textColorPressed="#FFFFFF",
+                            onClick="onNpoBtnClicked"
+                        }
+                    },
+                    {
+                        tag="Button", attributes={
+                            id="NpoBtn2",
+                            text="MARKSMAN",
+                            fontSize="10",
+                            color="#FFFFFF00",
+                            textColor="#80808080",
+                            textColorHover="#80808080",
+                            textColorPressed="#80808080",
+                            onClick="onNpoBtnClicked"
+                        }
+                    },
+                    {
+                        tag="Button", attributes={
+                            id="NpoBtn3",
+                            text="BATTLER",
+                            fontSize="10",
+                            color="#FFFFFF00",
+                            textColor="#80808080",
+                            textColorHover="#80808080",
+                            textColorPressed="#80808080",
+                            onClick="onNpoBtnClicked"
+                        }
+                    },
+                    {
+                        tag="Button", attributes={
+                            id="NpoBtn4",
+                            text="GUARDIAN",
+                            fontSize="10",
+                            color="#FFFFFF00",
+                            textColor="#80808080",
+                            textColorHover="#80808080",
+                            textColorPressed="#80808080",
+                            onClick="onNpoBtnClicked"
+                        }
+                    }
+                }
+            }
+        }
+    }
+end
+
+function onNpoBtnClicked(player, value, id)
+    local index = tonumber(id:match("NpoBtn(%d+)"))
+    if not index then return end
+
+    if npoBehaviourStates[index] then return end
+
+    for i = 1, 4 do
+        npoBehaviourStates[i] = (i == index)
+
+        if npoBehaviourStates[i] then
+            self.UI.setAttributes("NpoBtn"..i, {
+                color="#ff7b00",
+                textColor="#FFFFFF",
+                textColorHover="#FFFFFF",
+                textColorPressed="#FFFFFF"
+            })
+        else
+            self.UI.setAttributes("NpoBtn"..i, {
+                color="#FFFFFF00",
+                textColor="#80808080",
+                textColorHover="#80808080",
+                textColorPressed="#80808080"
+            })
+        end
     end
 end
 
