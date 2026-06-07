@@ -691,15 +691,15 @@ end
 
 -- NEMESIS CORE RULES
 
-local coreRuleStates = { true, true, false }
+local coreRuleStates = { true, true, true }
 
 function buildCoreRuleSelect()
     return {
         tag="Panel", attributes={
             id="CoreRuleSelectPanel",
-            position="30 29 -50",
+            position="13 63.5 -50",
             rotation="0 0 180",
-            width="580", height="230",
+            width="380", height="28",
             scale=UIScale,
             color="#FFFFFF00"
         },
@@ -707,156 +707,49 @@ function buildCoreRuleSelect()
             {
                 tag="HorizontalLayout", attributes={
                     id="CoreRuleSelect",
-                    spacing="6"
+                    spacing="3"
                 },
                 children={
                     {
                         tag="Button", attributes={
                             id="CoreRuleBtn1",
-                            width="80", height="80",
+                            text="EXTRA DEFENCE",
+                            fontSize="12",
                             flexibleWidth="1",
-                            color="#FFFFFF00",
-                            onClick="onCoreRuleBtnClicked",
-                            opacity=coreRuleStates[1] and "1" or "0.3"
-                        },
-                        children={
-                            {
-                                tag="VerticalLayout", attributes={spacing="0"},
-                                children={
-                                    {
-                                        tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
-                                        children={
-                                            {
-                                                tag="Text", attributes={
-                                                    id="CoreRuleBtn1_header",
-                                                    text="EXTRA DEFENCE",
-                                                    alignment="MiddleLeft",
-                                                    textColor="#000000",
-                                                    fontStyle="Bold",
-                                                    fontSize="18"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        tag="Panel", attributes={flexibleHeight="6", color="#ffffff00"},
-                                        children={
-                                            {
-                                                tag="Text", attributes={
-                                                    id="CoreRuleBtn1_body",
-                                                    text="Whenever an operative is shooting this operative, collect and roll one additional defence dice, unless this operative is injured.",
-                                                    alignment="UpperLeft"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            fontStyle="Bold",
+                            color="#ff7b00",
+                            textColor="#FFFFFF",
+                            textColorHover="#FFFFFF",
+                            textColorPressed="#FFFFFF",
+                            onClick="onCoreRuleBtnClicked"
                         }
                     },
                     {
                         tag="Button", attributes={
                             id="CoreRuleBtn2",
-                            width="80", height="80",
+                            text="BULKY",
+                            fontSize="12",
                             flexibleWidth="1",
-                            color="#FFFFFF00",
-                            onClick="onCoreRuleBtnClicked",
-                            opacity=coreRuleStates[2] and "1" or "0.3"
-                        },
-                        children={
-                            {
-                                tag="VerticalLayout", attributes={spacing="0"},
-                                children={
-                                    {
-                                        tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
-                                        children={
-                                            {
-                                                tag="Text", attributes={
-                                                    id="CoreRuleBtn2_header",
-                                                    text="BULKY",
-                                                    alignment="MiddleLeft",
-                                                    textColor="#000000",
-                                                    fontStyle="Bold",
-                                                    fontSize="18"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        tag="Panel", attributes={flexibleHeight="6", color="#ffffff00"},
-                                        children={
-                                            {
-                                                tag="Text", attributes={
-                                                    id="CoreRuleBtn2_body",
-                                                    text=[[• This operative cannot be placed on Vantage terrain higher than 2" from the killzone floor.
-• Whenever this operative would perform the Fight action, the distance requirements of its control range can be changed to 1" horizontally and 4" vertically until the end of that action.]],
-                                                    alignment="MiddleLeft"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            fontStyle="Bold",
+                            color="#ff7b00",
+                            textColor="#FFFFFF",
+                            textColorHover="#FFFFFF",
+                            textColorPressed="#FFFFFF",
+                            onClick="onCoreRuleBtnClicked"
                         }
                     },
                     {
                         tag="Button", attributes={
                             id="CoreRuleBtn3",
-                            width="80", height="80",
+                            text="TOWERING SIZE",
+                            fontSize="12",
                             flexibleWidth="1",
-                            color="#FFFFFF00",
-                            onClick="onCoreRuleBtnClicked",
-                            opacity=coreRuleStates[3] and "1" or "0.3"
-                        },
-                        children={
-                            {
-                                tag="VerticalLayout", attributes={spacing="0"},
-                                children={
-                                    {
-                                        tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
-                                        children={
-                                            {
-                                                tag="Text", attributes={
-                                                    id="CoreRuleBtn3_header",
-                                                    text="TOWERING SIZE",
-                                                    alignment="MiddleCenter",
-                                                    textColor="#000000",
-                                                    fontStyle="Bold",
-                                                    fontSize="18"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        tag="ScrollView", attributes={
-                                            flexibleHeight="6",
-                                            color="#ffffff00",
-                                            vertical="true",
-                                            horizontal="false"
-                                        },
-                                        children={
-                                            {
-                                                tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
-                                                children={
-                                                    {
-                                                        tag="Text", attributes={
-                                                            id="CoreRuleBtn3_body",
-                                                            text=[[• In the Firefight phase, whenever you determine this operative's order, you cannot select Conceal.
-                    • This operative cannot be in cover or obscured by Light terrain, terrain parts less than 3" tall or terrain that's not wholly intervening.
-                    • Whenever another operative is performing the Shoot action, being within control range of other operatives doesn't prevent this operative from being selected as a valid target. In other words, this operative can be shot while within control range of friendly operatives.
-                    • This operative can move through terrain parts less than 2" tall. It cannot move through Accessible terrain (excluding hatchways) unless that terrain is also less than 2" tall.
-                    • Whenever this operative would finish a move in a terrain feature less than 2" tall, temporarily remove that terrain feature from the killzone, then return it when this operative leaves that location; if it's an equipment terrain feature, remove it from the battle instead.]],
-                                                            alignment="UpperLeft",
-                                                            fontSize="14",
-                                                            flexibleHeight="1"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            fontStyle="Bold",
+                            color="#ff7b00",
+                            textColor="#FFFFFF",
+                            textColorHover="#FFFFFF",
+                            textColorPressed="#FFFFFF",
+                            onClick="onCoreRuleBtnClicked"
                         }
                     }
                 }
@@ -870,8 +763,24 @@ function onCoreRuleBtnClicked(player, value, id)
     if not index then return end
 
     coreRuleStates[index] = not coreRuleStates[index]
-    local opacity = coreRuleStates[index] and "1" or "0.3"
-    self.UI.setAttributes("CoreRuleBtn"..index, {opacity=opacity})
+
+    if coreRuleStates[index] then
+        self.UI.setAttributes("CoreRuleBtn"..index, {
+            color="#ff7b00",
+            textColor="#FFFFFF",
+            textColorHover="#FFFFFF",
+            textColorPressed="#FFFFFF",
+            opacity="1"
+        })
+    else
+        self.UI.setAttributes("CoreRuleBtn"..index, {
+            color="#FFFFFF00",
+            textColor="#80808080",
+            textColorHover="#80808080",
+            textColorPressed="#80808080",
+            opacity="1"
+        })
+    end
 end
 
 -- UI HEIGHT MENU
@@ -881,7 +790,7 @@ function buildUIHeightMenu()
         tag="Panel", attributes={
             id="uiHeightRow",
             width="250", height="50",
-            position="-70 120 -100", rotation="0 0 180", scale=UIScale, rectAlignment="BottomRight",
+            position="-73 143 -100", rotation="0 0 180", scale=UIScale, rectAlignment="BottomRight",
             color="#222222", padding="0"
         },
         children={
@@ -952,7 +861,7 @@ function buildApplyButton()
             text="APPLY KTUI SCRIPT",
             fontSize="16",
             width="200", height="60",
-            position="0 120 -100",
+            position="0 143 -100",
             rotation="0 0 180",
             scale=UIScale,
             rectAlignment="BottomCenter",
