@@ -56,10 +56,11 @@ function onLoad()
         buildNameTextField(),
         buildCoreRuleSelect(),
         buildNpoBehaviourSelect(),
-        buildAllegianceTrait(),
-        buildNemesisTraitRow(),
+        buildTraitSelection(),
         buildRWeaponListTable(),
-        buildMWeaponListTable()
+        buildMWeaponListTable(),
+        buildAllegianceTraitListTable(),
+        buildNemesisTraitListTable()
     })
 end
 
@@ -692,15 +693,35 @@ function onMWeaponButtonClicked(player, value, id)
 
 end
 
--- ALLEGIANCE TRAIT SELECTION
+-- TRAIT SELECTION
+
+function buildTraitSelection()
+    return {
+        tag="Panel", attributes={
+            id="traitSelection",
+            position="0 28 -50",
+            rotation="0 0 180",
+            scale=UIScale,
+            width="805", height="248"
+        },
+        children={
+            {
+                tag="HorizontalLayout", attributes={spacing="15"},
+                children={
+                    buildAllegianceTrait(),
+                    buildNemesisTrait("nemesisTrait1"),
+                    buildNemesisTrait("nemesisTrait2"),
+                    buildNemesisTrait("nemesisTrait3")
+                }
+            }
+        }
+    }
+end
 
 function buildAllegianceTrait()
     return {
         tag="Panel", attributes={
             id="allegianceTrait",
-            position="77 28 -50",
-            rotation="0 0 180",
-            scale=UIScale,
             width="189", height="248"
         },
         children={
@@ -745,7 +766,79 @@ function buildAllegianceTrait()
                                     {
                                         tag="InputField", attributes={
                                             id="allegianceTrait_body",
-                                            text="Whenever a LEAGUES OF VOTANN NPO or friendly LEAGUES OF VOTANN NEMESIS operative is shooting against or fighting against an enemy operative that contests an objective marker, or an area of the killzone that determines victory, that LEAGUES OF VOTANN operative's weapons have the Balanced weapon rule.",
+                                            text="Whenever an operative is shooting an IMPERIUM NPO or friendly IMPERIUM NEMESIS operative, if that IMPERIUM operative is wholly within its territory, one of its defence dice can be retained as a normal success without rolling it (in addition to a cover save, if any).",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="UpperLeft",
+                                            width="180", height="220",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+end
+
+LastNemesisPanel = nil
+
+function buildNemesisTrait(idSuffix)
+    return {
+        tag="Panel", attributes={
+            id=idSuffix,
+            width="189", height="248"
+        },
+        children={
+            {
+                tag="HorizontalLayout", attributes={spacing="0"},
+                children={
+                    {
+                        tag="Button", attributes={
+                            id=idSuffix.."_sideButton",
+                            flexibleWidth="1",
+                            flexibleHeight="1",
+                            color="#00aaffb8",
+                            onClick="onNemesisTraitClicked"
+                        }
+                    },
+                    {
+                        tag="VerticalLayout", attributes={spacing="0", flexibleWidth="20"},
+                        children={
+                            {
+                                tag="Panel", attributes={flexibleHeight="1", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id=idSuffix.."_header",
+                                            text="",
+                                            placeholder="-",
+                                            fontStyle="Bold",
+                                            fontSize="12",
+                                            color="#00000000",
+                                            textColor="#000000",
+                                            alignment="MiddleLeft",
+                                            position="0 -6 0",
+                                            width="180", height="50",
+                                            lineType="MultiLineNewline",
+                                            multiline="true"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                tag="Panel", attributes={flexibleHeight="6", color="#00000000"},
+                                children={
+                                    {
+                                        tag="InputField", attributes={
+                                            id=idSuffix.."_body",
+                                            text="",
+                                            placeholder="-",
                                             fontSize="12",
                                             color="#00000000",
                                             textColor="#000000",
@@ -766,100 +859,253 @@ function buildAllegianceTrait()
 end
 
 function onAllegianceTraitClicked(player, value, id)
-    print("allegianceTrait clicked by "..player)
+    self.UI.setAttributes("allegianceTrait_header", { text = "" })
+    self.UI.setAttributes("allegianceTrait_body",   { text = "" })
+    self.UI.setAttributes("AllegianceTraitGrid", { active = "true" })
+    self.UI.setAttributes("NemesisTraitGrid",    { active = "false" })
 end
 
--- NEMESIS TRAIT SELECTION
-
-function buildNemesisTraitRow()
-    return {
-        tag="Panel", attributes={
-            id="nemesisTraitRow",
-            position="0 28 -50",
-            rotation="0 0 180",
-            scale=UIScale,
-            width="600", height="248",
-            color="#00000000"
-        },
-        children={
-            buildNemesisTrait("nemesisTrait1"),
-            buildNemesisTrait("nemesisTrait2"),
-            buildNemesisTrait("nemesisTrait3")
-        }
-    }
+function onNemesisTraitClicked(player, value, id)
+    local idx = id:match("nemesisTrait(%d+)")
+    if idx then
+        LastNemesisPanel = idx
+    end
+    self.UI.setAttributes("nemesisTrait"..idx.."_header", { text = "" })
+    self.UI.setAttributes("nemesisTrait"..idx.."_body",   { text = "" })
+    self.UI.setAttributes("NemesisTraitGrid", { active = "true" })
+    self.UI.setAttributes("AllegianceTraitGrid", { active = "false" })
 end
 
-function buildNemesisTrait(idSuffix)
-    return {
-        tag="Panel", attributes={
-            id=idSuffix,
-            width="189", height="248",
-            color="#00000000"
-        },
+-- TRAIT SELECTION LISTS
+
+-- Allegiance Traits
+local AllegianceTraits = {
+    { header="IMPERIUM - DEFENDERS OF THE IMPERIUM", body="Whenever an operative is shooting an IMPERIUM NPO or friendly IMPERIUM NEMESIS operative, if that IMPERIUM operative is wholly within its territory, one of its defence dice can be retained as a normal success without rolling it (in addition to a cover save, if any)." },
+    { header="CHAOS - LET THE GALAXY BURN", body="Whenever a CHAOS NPO or friendly CHAOS NEMESIS operative is wholly within enemy territory, its weapons have the Balanced weapon rule." },
+    { header="AELDARI - ARROGANT SUPERIORITY", body="Whenever an AELDARI NPO or friendly AELDARI NEMESIS operative is shooting against or fighting against a ready enemy operative, if two or more fails are rolled for it, one of them can be discarded to re-roll another." },
+    { header="ORK - WAAAGH!", body="Whenever an ORK NPO is fighting, its weapons have the Balanced weapon rule. Worsen the Hit stat of ORK NEMESIS operatives' ranged weapons by 1, but their melee weapons have the Severe weapon rule." },
+    { header="TYRANID - WILL OF THE HIVE MIND", body="Ignore the changes to TYRANID NPO and friendly TYRANID NEMESIS operatives' stats from being injured (including their weapons' stats)." },
+    { header="NECRON - LIVING METAL", body="In the Ready step of each Strategy phase, each NECRON NPO and friendly NECRON NEMESIS operative regains up to D3+1 lost wounds (roll separately for each)." },
+    { header="T'AU EMPIRE - SUPPORTING FIRE", body="Whenever a T'AU EMPIRE NPO operative is within 3\" of another, its ranged weapons have the Accurate 1 weapon rule. Whenever a friendly T'AU EMPIRE NEMESIS operative is within 3\" of another friendly TAU EMPIRE operative, that NEMESIS operative's ranged weapons have the Accurate 1 weapon rule." },
+    { header="LEAGUES OF VOTANN - ACQUISITION AT ALL COSTS", body="Whenever a LEAGUES OF VOTANN NPO or friendly LEAGUES OF VOTANN NEMESIS operative is shooting against or fighting against an enemy operative that contests an objective marker, or an area of the kilizone that determines victory, that LEAGUES OF VOTANN operative's weapons have the Balanced weapon rule." },
+}
+
+-- Nemesis Traits
+local NemesisTraits = {
+    { header="Armoured", body="Whenever an operative is shooting this operative with a weapon that has a Normal Dmg stat of 3 or less, improve this operative's Save stat by 1." },
+    { header="Blitz", body="Whenever this operative performs the Charge action during its activation, its melee weapons have the Severe and Shock weapon rules until the end of that activation." },
+    { header="Duellist", body="Whenever this operative is fighting or retaliating, you can resolve one of its successes before the normal order. If you do, that success must be used to block." },
+    { header="Focused Targeting", body="Whenever this operative is shooting during its activation, if it hasn't performed any other actions during that activation, its ranged weapons have the Punishing weapon rule." },
+    { header="Close-range Lethality", body="Whenever this operative is shooting the closest valid target within 8\" of it, its ranged weapons have the Lethal 5+ weapon rule; if the weapon already has that weapon rule, it also has the Severe weapon rule." },
+    { header="Fury", body="This operative's melee weapons have the Ceaseless weapon rule; if the weapon already has that weapon rule, it has the Relentless weapon rule. Worsen the Hit stat of this operative's ranged weapons by 1." },
+    { header="Implacable", body="Ignore any changes to this operative's weapon stats from being injured." },
+    { header="Crushing Impact", body="When this operative finishes moving during the Charge action, inflict D3+3 damage on one enemy operative within its control range." },
+    { header="Shielded", body="Once per battle, when an attack dice inflicts damage on this operative, you can ignore that inflicted damage." },
+    { header="Shrouded", body="Whenever an operative is shooting this operative from more than 8\" away, attack dice cannot be re-rolled." },
+    { header="Tenacious", body="Ignore any changes to this operative's Move stat from being injured." },
+    { header="Tough", body="Whenever an attack dice inflicts damage of 4 or more on this operative, roll one D6: on a 5+, subtract 1 from that inflicted damage." },
+    { header="Violent Demise", body="If this operative is incapacitated, before it's removed from the killzone, inflict D6+1 damage on each other operative within 3\" of it (excluding operatives with Heavy terrain wholly intervening between them and this operative)." },
+    { header="-", body="-"},
+}
+
+function buildAllegianceTraitListTable()
+    local columns = 2
+    local totalRows = math.ceil(#AllegianceTraits / columns)
+
+    local xml = {
+        tag="Panel", attributes={id="AllegianceTraitGrid", width="750", height=tostring(totalRows*150), active="false"},
         children={
             {
-                tag="HorizontalLayout", attributes={spacing="0"},
-                children={
-                    -- Side button
-                    {
-                        tag="Button", attributes={
-                            id=idSuffix.."_sideButton",
-                            width="24", height="248",
-                            color="#FF8000",
-                            onClick="onNemesisTraitClicked"
-                        }
+                tag="VerticalLayout", attributes={
+                    spacing="5",
+                    position="-10 0 -100",
+                    rotation="0 0 180",
+                    scale=UIScale
+                },
+                children={}
+            }
+        }
+    }
+
+    for r = 1, totalRows do
+        local rowLayout = { tag="HorizontalLayout", attributes={spacing="5"}, children={} }
+
+        for c = 1, columns do
+            local idx = (r-1)*columns + c
+            local trait = AllegianceTraits[idx]
+            if trait then
+                table.insert(rowLayout.children, {
+                    tag="Button",
+                    attributes={
+                        id="AllegianceTraitButton"..idx,
+                        onClick="onAllegianceTraitButtonClicked",
+                        width="240", height="150",
+                        color="#FF8000", textColor="#ffffff"
                     },
-                    -- Header + Body stack
-                    {
-                        tag="VerticalLayout", attributes={spacing="0"},
-                        children={
-                            {
-                                tag="Panel", attributes={height="50", color="#00000000"},
-                                children={
-                                    {
-                                        tag="InputField", attributes={
-                                            id=idSuffix.."_header",
-                                            text="NEMESIS HEADER",
-                                            fontStyle="Bold",
-                                            fontSize="12",
-                                            color="#00000000",
-                                            textColor="#000000",
-                                            alignment="MiddleLeft",
-                                            width="160", height="50",
-                                            lineType="MultiLineNewline",
-                                            multiline="true"
+                    children={
+                        {
+                            tag="VerticalLayout", attributes={spacing="2", padding="2"},
+                            children={
+                                {
+                                    tag="Panel", attributes={flexibleHeight="1", color="#FF8000"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="14",
+                                                fontStyle="Bold",
+                                                font="Arial",
+                                                textColor="#ffffff",
+                                                textColorHover="#ffffff",
+                                                textColorPressed="#ffffff"
+                                            },
+                                            value=trait.header
                                         }
                                     }
-                                }
-                            },
-                            {
-                                tag="Panel", attributes={height="198", color="#00000000"},
-                                children={
-                                    {
-                                        tag="InputField", attributes={
-                                            id=idSuffix.."_body",
-                                            text="Nemesis trait description goes here...",
-                                            fontSize="12",
-                                            color="#00000000",
-                                            textColor="#000000",
-                                            alignment="UpperLeft",
-                                            width="160", height="198",
-                                            lineType="MultiLineNewline",
-                                            multiline="true"
+                                },
+                                {
+                                    tag="Panel", attributes={flexibleHeight="4", color="#ffffff"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="UpperLeft",
+                                                fontSize="12",
+                                                font="Arial",
+                                                textColor="#000000",
+                                                textColorHover="#000000",
+                                                textColorPressed="#000000"
+                                            },
+                                            value=trait.body
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                })
+            else
+                table.insert(rowLayout.children, { tag="Panel", attributes={width="240", height="150"} })
+            end
+        end
+
+        table.insert(xml.children[1].children, rowLayout)
+    end
+
+    return xml
+end
+
+function buildNemesisTraitListTable()
+    local columns = 3
+    local totalRows = math.ceil(#NemesisTraits / columns)
+
+    local xml = {
+        tag="Panel", attributes={id="NemesisTraitGrid", width="750", height=tostring(totalRows*150), active="false"},
+        children={
+            {
+                tag="VerticalLayout", attributes={
+                    spacing="5",
+                    position="-10 0 -100",
+                    rotation="0 0 180",
+                    scale=UIScale
+                },
+                children={}
             }
         }
     }
+
+    for r = 1, totalRows do
+        local rowLayout = { tag="HorizontalLayout", attributes={spacing="5"}, children={} }
+
+        for c = 1, columns do
+            local idx = (r-1)*columns + c
+            local trait = NemesisTraits[idx]
+            if trait then
+                table.insert(rowLayout.children, {
+                    tag="Button",
+                    attributes={
+                        id="NemesisTraitButton"..idx,
+                        onClick="onNemesisTraitButtonClicked",
+                        width="240", height="150",
+                        color="#3e3e3e"
+                    },
+                    children={
+                        {
+                            tag="VerticalLayout", attributes={spacing="2", padding="2"},
+                            children={
+                                {
+                                    tag="Panel", attributes={flexibleHeight="1", color="#ffc40000"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                id="NemesisTraitButton"..idx.."_header",
+                                                fontSize="14",
+                                                fontStyle="Bold",
+                                                font="Arial",
+                                                textColor="#FF8000",
+                                                textColorHover="#FF8000",
+                                                textColorPressed="#FF8000"
+                                            },
+                                            value=trait.header
+                                        }
+                                    }
+                                },
+                                {
+                                    tag="Panel", attributes={flexibleHeight="4", color="#00000000"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="UpperLeft",
+                                                id="NemesisTraitButton"..idx.."_body",
+                                                fontSize="12",
+                                                font="Arial",
+                                                textColor="#FFFFFF",
+                                                textColorHover="#FFFFFF",
+                                                textColorPressed="#FFFFFF"
+                                            },
+                                            value=trait.body
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            else
+                table.insert(rowLayout.children, { tag="Panel", attributes={width="240", height="150"} })
+            end
+        end
+
+        table.insert(xml.children[1].children, rowLayout)
+    end
+
+    return xml
 end
 
-function onNemesisTraitClicked(player, value, id)
-    print("nemesisTrait clicked by "..player)
+function onAllegianceTraitButtonClicked(player, value, id)
+    local idx = tonumber(id:match("%d+"))
+    local trait = AllegianceTraits[idx]
+    if not trait then return end
+    self.UI.setAttributes("allegianceTrait_header", { text = trait.header })
+    self.UI.setAttributes("allegianceTrait_body",   { text = trait.body })
+    self.UI.setAttributes("AllegianceTraitGrid", { active = "false" })
+end
+
+function onNemesisTraitButtonClicked(player, value, id)
+    local idx = tonumber(id:match("%d+"))
+    local trait = NemesisTraits[idx]
+    if not trait or not LastNemesisPanel then return end
+    local headerId = "nemesisTrait"..LastNemesisPanel.."_header"
+    local bodyId   = "nemesisTrait"..LastNemesisPanel.."_body"
+    self.UI.setAttributes(headerId, { text = "" })
+    self.UI.setAttributes(bodyId,   { text = "" })
+    self.UI.setAttributes(headerId, { text = trait.header })
+    self.UI.setAttributes(bodyId,   { text = trait.body })
+    self.UI.setAttributes("NemesisTraitGrid", { active = "false" })
 end
 
 -- NEMESIS CORE RULES
