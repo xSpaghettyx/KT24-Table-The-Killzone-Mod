@@ -80,12 +80,12 @@ function buildNameTextField()
             {
                 tag="InputField", attributes={
                     id="operativeName",
-                    text="Enter NEMESIS name here",
+                    text="",
+                    placeholder="Enter NEMESIS name here",
                     fontSize="21",
                     width="400", height="50",
                     color="#FFFFFF00",
                     textColor="#FFFFFF",
-                    placeholder="Nemesis Operative",
                     placeholderColor="#888888",
                     alignment="MiddleCenter"
                 }
@@ -533,26 +533,57 @@ function buildMWeaponListTable()
                         id="MweaponButton"..idx,
                         onClick="onMWeaponButtonClicked",
                         width="240", height="150",
-                        color="#3e3e3e", textColor="#FFFFFF"
+                        color="#ffffff"
                     },
                     children={
                         {
                             tag="VerticalLayout", attributes={spacing="2", padding="2"},
                             children={
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="14", textColor="#ff8400", color="#ff8400", outline="false", fontStyle="Bold"},
-                                    value=weapon.name
+                                    tag="Panel", attributes={flexibleHeight="3", color="#FF8000"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="14",
+                                                fontStyle="Bold",
+                                                font="Arial",
+                                                color="#FFFFFF"
+                                            },
+                                            value=weapon.name
+                                        }
+                                    }
                                 },
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
-                                    value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                    tag="Panel", attributes={flexibleHeight="1", color="#FFFFFF"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="12",
+                                                font="Arial",
+                                                color="#000000"
+                                            },
+                                            value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                        }
+                                    }
                                 },
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
-                                    value="WR "..weapon.wr
+                                    tag="Panel", attributes={flexibleHeight="3", color="#FFFFFF"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="12",
+                                                font="Arial",
+                                                color="#000000"
+                                            },
+                                            value="WR "..weapon.wr
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -601,26 +632,61 @@ function buildRWeaponListTable()
                         id="RweaponButton"..idx,
                         onClick="onRWeaponButtonClicked",
                         width="240", height="150",
-                        color="#3e3e3e", textColor="#FFFFFF"
+                        color="#ffffff"
                     },
                     children={
                         {
                             tag="VerticalLayout", attributes={spacing="2", padding="2"},
                             children={
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="14", textColor="#ff8400", color="#ff8400", outline="false", fontStyle="Bold"},
-                                    value=weapon.name
+                                    tag="Panel", attributes={flexibleHeight="3", color="#FF8000"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="14",
+                                                fontStyle="Bold",
+                                                font="Arial",
+                                                Color="#FFFFFF"
+                                            },
+                                            value=weapon.name
+                                        }
+                                    }
                                 },
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
-                                    value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                    tag="Panel", attributes={flexibleHeight="1", color="#FFFFFF"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="12",
+                                                font="Arial",
+                                                textColor="#FFFFFF",
+                                                textColorHover="#FFFFFF",
+                                                textColorPressed="#FFFFFF"
+                                            },
+                                            value="ATK "..weapon.atk.." | HIT "..weapon.hit.." | DMG "..weapon.dmg
+                                        }
+                                    }
                                 },
                                 {
-                                    tag="Text",
-                                    attributes={alignment="MiddleCenter", fontSize="12", textColor="#FFFFFF", color="#FFFFFF", outline="false"},
-                                    value="WR "..weapon.wr
+                                    tag="Panel", attributes={flexibleHeight="3", color="#FFFFFF"},
+                                    children={
+                                        {
+                                            tag="Text",
+                                            attributes={
+                                                alignment="MiddleCenter",
+                                                fontSize="12",
+                                                font="Arial",
+                                                textColor="#FFFFFF",
+                                                textColorHover="#FFFFFF",
+                                                textColorPressed="#FFFFFF"
+                                            },
+                                            value="WR "..weapon.wr
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -749,6 +815,7 @@ function buildAllegianceTrait()
                                             text=[[IMPERIUM: DEFENDERS OF THE IMPERIUM]],
                                             fontStyle="Bold",
                                             fontSize="12",
+                                            placeholder="-",
                                             color="#00000000",
                                             textColor="#000000",
                                             alignment="MiddleLeft",
@@ -768,6 +835,7 @@ function buildAllegianceTrait()
                                             id="allegianceTrait_body",
                                             text="Whenever an operative is shooting an IMPERIUM NPO or friendly IMPERIUM NEMESIS operative, if that IMPERIUM operative is wholly within its territory, one of its defence dice can be retained as a normal success without rolling it (in addition to a cover save, if any).",
                                             fontSize="12",
+                                            placeholder="-",
                                             color="#00000000",
                                             textColor="#000000",
                                             alignment="UpperLeft",
@@ -940,7 +1008,7 @@ function buildAllegianceTraitListTable()
                         id="AllegianceTraitButton"..idx,
                         onClick="onAllegianceTraitButtonClicked",
                         width="240", height="150",
-                        color="#FF8000", textColor="#ffffff"
+                        color="#ffffffc4"
                     },
                     children={
                         {
@@ -956,16 +1024,14 @@ function buildAllegianceTraitListTable()
                                                 fontSize="14",
                                                 fontStyle="Bold",
                                                 font="Arial",
-                                                textColor="#ffffff",
-                                                textColorHover="#ffffff",
-                                                textColorPressed="#ffffff"
+                                                color="#FFFFFF"
                                             },
                                             value=trait.header
                                         }
                                     }
                                 },
                                 {
-                                    tag="Panel", attributes={flexibleHeight="4", color="#ffffff"},
+                                    tag="Panel", attributes={flexibleHeight="4", color="#ffffffc4"},
                                     children={
                                         {
                                             tag="Text",
@@ -973,9 +1039,7 @@ function buildAllegianceTraitListTable()
                                                 alignment="UpperLeft",
                                                 fontSize="12",
                                                 font="Arial",
-                                                textColor="#000000",
-                                                textColorHover="#000000",
-                                                textColorPressed="#000000"
+                                                color="#000000"
                                             },
                                             value=trait.body
                                         }
@@ -1028,14 +1092,14 @@ function buildNemesisTraitListTable()
                         id="NemesisTraitButton"..idx,
                         onClick="onNemesisTraitButtonClicked",
                         width="240", height="150",
-                        color="#3e3e3e"
+                        color="#ffffffc4"
                     },
                     children={
                         {
                             tag="VerticalLayout", attributes={spacing="2", padding="2"},
                             children={
                                 {
-                                    tag="Panel", attributes={flexibleHeight="1", color="#ffc40000"},
+                                    tag="Panel", attributes={flexibleHeight="1", color="#00aaffb8"},
                                     children={
                                         {
                                             tag="Text",
@@ -1045,16 +1109,14 @@ function buildNemesisTraitListTable()
                                                 fontSize="14",
                                                 fontStyle="Bold",
                                                 font="Arial",
-                                                textColor="#FF8000",
-                                                textColorHover="#FF8000",
-                                                textColorPressed="#FF8000"
+                                                color="#FFFFFF"
                                             },
                                             value=trait.header
                                         }
                                     }
                                 },
                                 {
-                                    tag="Panel", attributes={flexibleHeight="4", color="#00000000"},
+                                    tag="Panel", attributes={flexibleHeight="4", color="#ffffffc4"},
                                     children={
                                         {
                                             tag="Text",
@@ -1063,9 +1125,7 @@ function buildNemesisTraitListTable()
                                                 id="NemesisTraitButton"..idx.."_body",
                                                 fontSize="12",
                                                 font="Arial",
-                                                textColor="#FFFFFF",
-                                                textColorHover="#FFFFFF",
-                                                textColorPressed="#FFFFFF"
+                                                color="#000000"
                                             },
                                             value=trait.body
                                         }
