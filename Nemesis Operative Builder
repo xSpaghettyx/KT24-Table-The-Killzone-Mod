@@ -295,12 +295,12 @@ function buildWeaponRow(rowIndex)
                     {
                         tag="InputField", attributes={
                             id="row"..rowIndex.."_weaponName",
-                            text=" ",
+                            text="",
                             fontSize="18",
                             width="220", height="60",
                             color="#00000000",
                             textColor="#000000",
-                            placeholder="",
+                            placeholder=" ",
                             placeholderColor="#888888",
                             alignment="MiddleLeft",
                             lineType="MultiLineNewline",
@@ -316,12 +316,12 @@ function buildWeaponRow(rowIndex)
                     {
                         tag="InputField", attributes={
                             id="row"..rowIndex.."_atk",
-                            text=" ",
+                            text="",
                             fontSize="18",
                             width="40", height="40",
                             color="#00000000",
                             textColor="#000000",
-                            placeholder="",
+                            placeholder=" ",
                             placeholderColor="#888888",
                             alignment="MiddleCenter"
                         }
@@ -334,12 +334,12 @@ function buildWeaponRow(rowIndex)
                     {
                         tag="InputField", attributes={
                             id="row"..rowIndex.."_hit",
-                            text=" ",
+                            text="",
                             fontSize="18",
                             width="50", height="40",
                             color="#00000000",
                             textColor="#000000",
-                            placeholder="",
+                            placeholder=" ",
                             placeholderColor="#888888",
                             alignment="MiddleCenter"
                         }
@@ -352,12 +352,12 @@ function buildWeaponRow(rowIndex)
                     {
                         tag="InputField", attributes={
                             id="row"..rowIndex.."_dmg",
-                            text=" ",
+                            text="",
                             fontSize="18",
                             width="50", height="40",
                             color="#00000000",
                             textColor="#000000",
-                            placeholder="",
+                            placeholder=" ",
                             placeholderColor="#888888",
                             alignment="MiddleCenter"
                         }
@@ -375,7 +375,7 @@ function buildWeaponRow(rowIndex)
                             width="400", height="60",
                             color="#00000000",
                             textColor="#000000",
-                            placeholder="",
+                            placeholder=" ",
                             placeholderColor="#888888",
                             alignment="MiddleLeft",
                             lineType="MultiLineNewline",
@@ -946,7 +946,6 @@ end
 
 -- TRAIT SELECTION LISTS
 
--- Allegiance Traits
 local AllegianceTraits = {
     { header="IMPERIUM - DEFENDERS OF THE IMPERIUM", body="Whenever an operative is shooting an IMPERIUM NPO or friendly IMPERIUM NEMESIS operative, if that IMPERIUM operative is wholly within its territory, one of its defence dice can be retained as a normal success without rolling it (in addition to a cover save, if any)." },
     { header="CHAOS - LET THE GALAXY BURN", body="Whenever a CHAOS NPO or friendly CHAOS NEMESIS operative is wholly within enemy territory, its weapons have the Balanced weapon rule." },
@@ -958,7 +957,6 @@ local AllegianceTraits = {
     { header="LEAGUES OF VOTANN - ACQUISITION AT ALL COSTS", body="Whenever a LEAGUES OF VOTANN NPO or friendly LEAGUES OF VOTANN NEMESIS operative is shooting against or fighting against an enemy operative that contests an objective marker, or an area of the kilizone that determines victory, that LEAGUES OF VOTANN operative's weapons have the Balanced weapon rule." },
 }
 
--- Nemesis Traits
 local NemesisTraits = {
     { header="Armoured", body="Whenever an operative is shooting this operative with a weapon that has a Normal Dmg stat of 3 or less, improve this operative's Save stat by 1." },
     { header="Blitz", body="Whenever this operative performs the Charge action during its activation, its melee weapons have the Severe and Shock weapon rules until the end of that activation." },
@@ -1491,7 +1489,7 @@ function diffAndApply(model, data)
     local newHeight
 
     if mode == "fixed" and value then
-        newHeight = value
+        newHeight = tonumber(value) or 0
     else
         if ms.base.x == ms.base.z then
             newHeight = ms.base.x / 12
@@ -1502,8 +1500,8 @@ function diffAndApply(model, data)
 
     if not valEq(oldHeight, newHeight) then
         table.insert(changes, string.format("UI height: %s -> %.2f", tostring(oldHeight or "-"), newHeight))
-    ms.uiHeight = newHeight
-        end
+        ms.uiHeight = newHeight
+    end
 
     local statMap = {
         { key = "APL",    src = data.stats and data.stats.APL },
@@ -1519,6 +1517,9 @@ function diffAndApply(model, data)
             ms.stats[s.key] = new
         end
     end
+
+    ms.stats.Wounds = tonumber(data.stats and data.stats.Wounds) or 0
+    ms.wounds = ms.stats.Wounds
 
     if data.name and ms.info.name ~= data.name then
         table.insert(changes, string.format("Name: %s -> %s", trunc(ms.info.name, 30), data.name))
@@ -1573,7 +1574,7 @@ function diffAndApply(model, data)
     table.insert(changes, "Description rebuilt")
 
     if data.stats and data.stats.Wounds then
-        local w = data.stats.Wounds
+        local w = tonumber(data.stats.Wounds) or 0
         local cur = model.getName()
         local wStr = string.format("{%d/%d}", w, w)
         local prefix = cur:match("^(%[%x+%].-%[%-%]%s*)") or ""
@@ -1614,6 +1615,8 @@ function tableEq(a, b)
     end
     return true
 end
+
+--
 
 function rebuildDescription(model, data)
     local lines = {}
@@ -1708,18 +1711,6 @@ function ensureKTUIMini(model)
 end
 
 function applyStatsToModel(player_color)
-    local raw = self.getDescription()
-    if raw == nil or raw == "" then
-        broadcastToColor("No stat data in this card's description.", player_color, Color.Red)
-        return
-    end
-
-    local ok, data = pcall(function() return JSON.decode(raw) end)
-    if not ok or data == nil then
-        broadcastToColor("Failed to parse card description data.", player_color, Color.Red)
-        return
-    end
-
     local model = findModelOnCard()
     if model == nil then
         broadcastToColor("No model found. Make sure it is set to *Figurine* in Custom settings", player_color, Color.Orange)
@@ -1728,7 +1719,106 @@ function applyStatsToModel(player_color)
         ensureKTUIMini(model)
     end
 
+    local data = {}
+
+    local name = self.UI.getAttribute("operativeName", "text")
+    if name == nil or name == "" then
+        name = "Nemesis Operative"
+    end
+    data.name = name
+
+    local woundsText = tonumber(self.UI.getAttribute("woundsText", "text")) or 0
+    data.stats = {
+        APL    = self.UI.getAttribute("controlText", "text"),
+        Move   = self.UI.getAttribute("moveText", "text"),
+        Save   = self.UI.getAttribute("saveText", "text"),
+        Wounds = woundsText,
+    }
+
+    local allegianceHeader = self.UI.getAttribute("allegianceTrait_header", "text") or ""
+    local firstWord = allegianceHeader:match("^(%S+)") or ""
+    data.keywords = { "Nemesis Operative", firstWord }
+
+    data.weapons = {}
+    local rowIndex = 1
+    while true do
+        local weaponName = self.UI.getAttribute("row"..rowIndex.."_weaponName", "text")
+        if not weaponName or weaponName == "" then break end
+
+        local slotImage = self.UI.getAttribute("row"..rowIndex.."_btnCycle", "WeaponSlotImage")
+        local prefix = (slotImage == "2") and "[F4641D]M[-] " or "[1E87FF]R[-] "
+
+        table.insert(data.weapons, {
+            name       = prefix .. weaponName,
+            plain_name = weaponName,
+            stats = {
+                ATK = self.UI.getAttribute("row"..rowIndex.."_atk", "text"),
+                HIT = self.UI.getAttribute("row"..rowIndex.."_hit", "text"),
+                DMG = self.UI.getAttribute("row"..rowIndex.."_dmg", "text"),
+                WR  = self.UI.getAttribute("row"..rowIndex.."_wr", "text"),
+            }
+        })
+
+        rowIndex = rowIndex + 1
+    end
+
+    data.abilities = {}
+
+    table.insert(data.abilities, {
+        name = self.UI.getAttribute("allegianceTrait_header", "text"),
+        text = self.UI.getAttribute("allegianceTrait_body", "text"),
+    })
+
+    for i = 1, 3 do
+        local header = self.UI.getAttribute("nemesisTrait"..i.."_header", "text")
+        local body   = self.UI.getAttribute("nemesisTrait"..i.."_body", "text")
+        if header and header ~= "" then
+            table.insert(data.abilities, { name = header, text = body })
+        end
+    end
+
+    local coreRules = {}
+    local idx = 1
+    while true do
+        local btnId = "CoreRuleBtn"..idx
+        local color = self.UI.getAttribute(btnId, "color")
+        if not color then break end
+        if color:lower() == "#ff7b00" then
+            local txt = self.UI.getAttribute(btnId, "text")
+            if txt and txt ~= "" then table.insert(coreRules, txt) end
+        end
+        idx = idx + 1
+    end
+
+    local npoText = ""
+    for i = 1, 4 do
+        local btnId = "NpoBtn"..i
+        local state = self.UI.getAttribute(btnId, "npoBehaviourStates")
+        if state == "true" then
+            npoText = self.UI.getAttribute(btnId, "text") or ""
+            break
+        end
+    end
+
+    table.insert(data.abilities, {
+        name = "Nemesis Core Rules",
+        text = table.concat(coreRules, ", ") .. "\n\nNPO Behaviour: " .. npoText
+    })
+
     local changes = diffAndApply(model, data)
+
+    local msRaw = model.script_state
+    local ms = {}
+    if msRaw and msRaw ~= "" then
+        local ok, parsed = pcall(function() return JSON.decode(msRaw) end)
+        if ok and parsed then ms = parsed end
+    end
+
+    ms.stats = ms.stats or {}
+    ms.stats.Wounds = woundsText
+    ms.wounds = woundsText
+
+    model.script_state = JSON.encode(ms)
 end
 
 function findBase(obj)
