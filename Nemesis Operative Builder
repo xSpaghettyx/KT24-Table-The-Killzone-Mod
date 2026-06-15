@@ -1715,7 +1715,7 @@ function findModelOnCard()
         origin       = Vector(pos.x, pos.y + 1.5, pos.z),
         direction    = {0, -1, 0},
         type         = 2,
-        size         = {2, 2, 2},
+        size         = {20, 20, 20},
         max_distance = 3,
     })
     for _, hit in ipairs(hits) do
