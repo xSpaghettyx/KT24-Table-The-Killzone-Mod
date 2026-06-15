@@ -64,6 +64,10 @@ function onLoad()
     })
 end
 
+function onTextFieldCommit(player, value, id)
+    self.UI.setAttribute(id, "text", value)
+end
+
 -- NAME TEXT FIELD
 
 function buildNameTextField()
@@ -87,7 +91,8 @@ function buildNameTextField()
                     color="#FFFFFF00",
                     textColor="#FFFFFF",
                     placeholderColor="#888888",
-                    alignment="MiddleCenter"
+                    alignment="MiddleCenter",
+                    onEndEdit="onTextFieldCommit"
                 }
             }
         }
@@ -104,6 +109,7 @@ local sizeValues = {
 }
 
 function buildSizeRow()
+    local vals = sizeValues["S"]
     return {
         tag="Panel", attributes={
             rectAlignment="LowerCenter",
@@ -139,7 +145,7 @@ function buildSizeRow()
                             {
                                 tag="InputField", attributes={
                                     id="controlText",
-                                    text="4",
+                                    text=vals.control,
                                     fontSize="21",
                                     width="60", height="40",
                                     color="#FFFFFF00",
@@ -147,7 +153,8 @@ function buildSizeRow()
                                     placeholder="",
                                     placeholderColor="#888888",
                                     position="22 0 0",
-                                    alignment="MiddleCenter"
+                                    alignment="MiddleCenter",
+                                    onEndEdit="onTextFieldCommit"
                                 }
                             }
                         }
@@ -158,7 +165,7 @@ function buildSizeRow()
                             {
                                 tag="InputField", attributes={
                                     id="moveText",
-                                    text="6''",
+                                    text=vals.move,
                                     fontSize="21",
                                     width="60", height="40",
                                     color="#FFFFFF00",
@@ -166,7 +173,8 @@ function buildSizeRow()
                                     placeholder="",
                                     placeholderColor="#888888",
                                     position="15 0 0",
-                                    alignment="MiddleCenter"
+                                    alignment="MiddleCenter",
+                                    onEndEdit="onTextFieldCommit"
                                 }
                             }
                         }
@@ -177,7 +185,7 @@ function buildSizeRow()
                             {
                                 tag="InputField", attributes={
                                     id="saveText",
-                                    text="4+",
+                                    text=vals.save,
                                     fontSize="21",
                                     width="60", height="40",
                                     color="#FFFFFF00",
@@ -185,7 +193,8 @@ function buildSizeRow()
                                     placeholder="",
                                     placeholderColor="#888888",
                                     position="6 0 0",
-                                    alignment="MiddleCenter"
+                                    alignment="MiddleCenter",
+                                    onEndEdit="onTextFieldCommit"
                                 }
                             }
                         }
@@ -196,14 +205,15 @@ function buildSizeRow()
                             {
                                 tag="InputField", attributes={
                                     id="woundsText",
-                                    text="35",
+                                    text=vals.wounds,
                                     fontSize="21",
                                     width="60", height="40",
                                     color="#FFFFFF00",
                                     textColor="#FFFFFF",
                                     placeholder="",
                                     placeholderColor="#888888",
-                                    alignment="MiddleCenter"
+                                    alignment="MiddleCenter",
+                                    onEndEdit="onTextFieldCommit"
                                 }
                             }
                         }
@@ -305,7 +315,8 @@ function buildWeaponRow(rowIndex)
                             alignment="MiddleLeft",
                             lineType="MultiLineNewline",
                             multiline="true",
-                            autoSize="true"
+                            autoSize="true",
+                            onEndEdit="onTextFieldCommit"
                         }
                     }
                 }
@@ -323,7 +334,8 @@ function buildWeaponRow(rowIndex)
                             textColor="#000000",
                             placeholder=" ",
                             placeholderColor="#888888",
-                            alignment="MiddleCenter"
+                            alignment="MiddleCenter",
+                            onEndEdit="onTextFieldCommit"
                         }
                     }
                 }
@@ -341,7 +353,8 @@ function buildWeaponRow(rowIndex)
                             textColor="#000000",
                             placeholder=" ",
                             placeholderColor="#888888",
-                            alignment="MiddleCenter"
+                            alignment="MiddleCenter",
+                            onEndEdit="onTextFieldCommit"
                         }
                     }
                 }
@@ -359,7 +372,8 @@ function buildWeaponRow(rowIndex)
                             textColor="#000000",
                             placeholder=" ",
                             placeholderColor="#888888",
-                            alignment="MiddleCenter"
+                            alignment="MiddleCenter",
+                            onEndEdit="onTextFieldCommit"
                         }
                     }
                 }
@@ -380,7 +394,8 @@ function buildWeaponRow(rowIndex)
                             alignment="MiddleLeft",
                             lineType="MultiLineNewline",
                             multiline="true",
-                            autoSize="true"
+                            autoSize="true",
+                            onEndEdit="onTextFieldCommit"
                         }
                     }
                 }
@@ -822,7 +837,8 @@ function buildAllegianceTrait()
                                             position="0 -6 0",
                                             width="180", height="50",
                                             lineType="MultiLineNewline",
-                                            multiline="true"
+                                            multiline="true",
+                                            onEndEdit="onTextFieldCommit"
                                         }
                                     }
                                 }
@@ -841,7 +857,8 @@ function buildAllegianceTrait()
                                             alignment="UpperLeft",
                                             width="180", height="220",
                                             lineType="MultiLineNewline",
-                                            multiline="true"
+                                            multiline="true",
+                                            onEndEdit="onTextFieldCommit"
                                         }
                                     }
                                 }
@@ -894,7 +911,8 @@ function buildNemesisTrait(idSuffix)
                                             position="0 -6 0",
                                             width="180", height="50",
                                             lineType="MultiLineNewline",
-                                            multiline="true"
+                                            multiline="true",
+                                            onEndEdit="onTextFieldCommit"
                                         }
                                     }
                                 }
@@ -913,7 +931,8 @@ function buildNemesisTrait(idSuffix)
                                             alignment="UpperLeft",
                                             width="180", height="220",
                                             lineType="MultiLineNewline",
-                                            multiline="true"
+                                            multiline="true",
+                                            onEndEdit="onTextFieldCommit"
                                         }
                                     }
                                 }
@@ -1347,22 +1366,35 @@ function onNpoBtnClicked(player, value, id)
     for i = 1, 4 do
         npoBehaviourStates[i] = (i == index)
 
+        local attrs
         if npoBehaviourStates[i] then
-            self.UI.setAttributes("NpoBtn"..i, {
+            attrs = {
                 color="#ff7b00",
                 textColor="#FFFFFF",
                 textColorHover="#FFFFFF",
-                textColorPressed="#FFFFFF"
-            })
+                textColorPressed="#FFFFFF",
+                npoBehaviourStates="true"
+            }
         else
-            self.UI.setAttributes("NpoBtn"..i, {
+            attrs = {
                 color="#FFFFFF00",
                 textColor="#80808080",
                 textColorHover="#80808080",
-                textColorPressed="#80808080"
-            })
+                textColorPressed="#80808080",
+                npoBehaviourStates="false"
+            }
+        end
+        self.UI.setAttributes("NpoBtn"..i, attrs)
+    end
+end
+
+function getActiveNpoBehaviour()
+    for i = 1, 4 do
+        if npoBehaviourStates[i] then
+            return self.UI.getAttribute("NpoBtn"..i, "text") or ""
         end
     end
+    return ""
 end
 
 -- UI HEIGHT MENU
@@ -1560,6 +1592,18 @@ function diffAndApply(model, data)
         end
     end
 
+    if data.abilities then
+        local oldA = ms.info.abilities or {}
+        if not tableEq(oldA, data.abilities) then
+            for _, ab in ipairs(data.abilities) do
+                table.insert(changes, string.format("Ability: %s", ab.name or "?"))
+            end
+            ms.info.abilities = data.abilities
+        end
+    end
+
+    ms.info.actions = {}
+
     if data.actions then
         local oldAc = ms.info.actions or {}
         if not tableEq(oldAc, data.actions) then
@@ -1728,10 +1772,18 @@ function applyStatsToModel(player_color)
     data.name = name
 
     local woundsText = tonumber(self.UI.getAttribute("woundsText", "text")) or 0
+
+    local moveRaw = self.UI.getAttribute("moveText", "text") or ""
+    local saveRaw = self.UI.getAttribute("saveText", "text") or ""
+
+    local moveVal = moveRaw:gsub("''$", "")
+
+    local saveVal = saveRaw:gsub("%+$", "")
+
     data.stats = {
         APL    = self.UI.getAttribute("controlText", "text"),
-        Move   = self.UI.getAttribute("moveText", "text"),
-        Save   = self.UI.getAttribute("saveText", "text"),
+        Move   = moveVal,
+        Save   = saveVal,
         Wounds = woundsText,
     }
 
@@ -1743,21 +1795,29 @@ function applyStatsToModel(player_color)
     local rowIndex = 1
     while true do
         local weaponName = self.UI.getAttribute("row"..rowIndex.."_weaponName", "text")
-        if not weaponName or weaponName == "" then break end
+        if weaponName == nil then break end
 
-        local slotImage = self.UI.getAttribute("row"..rowIndex.."_btnCycle", "WeaponSlotImage")
-        local prefix = (slotImage == "2") and "[F4641D]M[-] " or "[1E87FF]R[-] "
+        if weaponName ~= "" then
+            local slotImage = self.UI.getAttribute("row"..rowIndex.."_btnCycle", "image") or images[1]
+            local prefix = "[1E87FF]R[-] "
 
-        table.insert(data.weapons, {
-            name       = prefix .. weaponName,
-            plain_name = weaponName,
-            stats = {
-                ATK = self.UI.getAttribute("row"..rowIndex.."_atk", "text"),
-                HIT = self.UI.getAttribute("row"..rowIndex.."_hit", "text"),
-                DMG = self.UI.getAttribute("row"..rowIndex.."_dmg", "text"),
-                WR  = self.UI.getAttribute("row"..rowIndex.."_wr", "text"),
-            }
-        })
+            if slotImage == images[2] then
+                prefix = "[1E87FF]R[-] "
+            elseif slotImage == images[3] then
+                prefix = "[F4641D]M[-] "
+            end
+
+            table.insert(data.weapons, {
+                name       = prefix .. weaponName,
+                plain_name = weaponName,
+                stats = {
+                    ATK = self.UI.getAttribute("row"..rowIndex.."_atk", "text"),
+                    HIT = self.UI.getAttribute("row"..rowIndex.."_hit", "text"),
+                    DMG = self.UI.getAttribute("row"..rowIndex.."_dmg", "text"),
+                    WR  = self.UI.getAttribute("row"..rowIndex.."_wr", "text"),
+                }
+            })
+        end
 
         rowIndex = rowIndex + 1
     end
@@ -1790,15 +1850,7 @@ function applyStatsToModel(player_color)
         idx = idx + 1
     end
 
-    local npoText = ""
-    for i = 1, 4 do
-        local btnId = "NpoBtn"..i
-        local state = self.UI.getAttribute(btnId, "npoBehaviourStates")
-        if state == "true" then
-            npoText = self.UI.getAttribute(btnId, "text") or ""
-            break
-        end
-    end
+    local npoText = getActiveNpoBehaviour()
 
     table.insert(data.abilities, {
         name = "Nemesis Core Rules",
