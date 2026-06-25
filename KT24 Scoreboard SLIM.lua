@@ -1881,7 +1881,7 @@ function buildHUD(def)
       id=panelID,
       width=uiWidth,
       height=uiHeight+30,
-      allowDragging=true,
+      allowDragging=false,
       returnToOriginalPositionWhenReleased=false,
       visibility=hudVisibility,
       rectAlignment="LowerCenter"
