@@ -467,7 +467,7 @@ function setup(settings)
   end
 end
 
-function (x, y, w, h)
+function buildScoreBanner(x, y, w, h)
   local ch = {}
   if rules.art.graphics.eventBanner then
     ch = {{
